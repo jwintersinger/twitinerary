@@ -1,27 +1,31 @@
 $(document).ready(function() {
-  var new_tweet_form = $('#new-tweet');
-  new_tweet_form.submit(function() { return on_new_tweet_submission(new_tweet_form);  });
+  new Twitinerary($('#new-tweet'));
 });
 
-function set_tweet_datetime() {
-  // Sets time to number of seconds since Unix epoch.
-  $('#new-tweet [name=datetime]').val( calculate_tweet_datetime().getTime() / 1000.0 );
+function Twitinerary(new_tweet_form) {
+  this.__new_tweet_form = new_tweet_form;
+  var self = this;
+  this.__new_tweet_form.submit(function() { return self.__on_new_tweet_submission(); });
 }
 
-function calculate_tweet_datetime() {
-  var form = $('#new-tweet');
-  var hour = convert_24_based_hour_to_12_based_hour(
-      parseInt(form.find('[name=hour]').val(), 10),
-      form.find('[name=period]').val() );
-  var minute = parseInt(form.find('[name=minute]').val(), 10);
-  var date = parse_date(form.find('[name=date]').val());
+Twitinerary.prototype.__set_tweet_datetime = function() {
+  // Sets time to number of seconds since Unix epoch.
+  this.__new_tweet_form.find('[name=datetime]').val( this.__calculate_tweet_datetime().getTime() / 1000.0 );
+}
+
+Twitinerary.prototype.__calculate_tweet_datetime = function() {
+  var hour = this.__convert_24_based_hour_to_12_based_hour(
+      parseInt(this.__new_tweet_form.find('[name=hour]').val(), 10),
+      this.__new_tweet_form.find('[name=period]').val() );
+  var minute = parseInt(this.__new_tweet_form.find('[name=minute]').val(), 10);
+  var date = this.__parse_date(this.__new_tweet_form.find('[name=date]').val());
   return new Date(date[0],     // Year.
                   date[1] - 1, // Month -- oddly, 0-based.
                   date[2],     // Date.
                   hour, minute);
 }
 
-function parse_date(date_str) {
+Twitinerary.prototype.__parse_date = function(date_str) {
   // Use negative indices to ensure continued operation in 8000 years or so.
   var l = date_str.length;
   var date  = parseInt(date_str.substring(l - 2, l),     10);
@@ -30,17 +34,17 @@ function parse_date(date_str) {
   return [year, month, date];
 }
 
-function convert_24_based_hour_to_12_based_hour(hour, period) {
+Twitinerary.prototype.__convert_24_based_hour_to_12_based_hour = function(hour, period) {
   if(period == 'pm' && hour < 12)  hour += 12;
   if(period == 'am' && hour == 12) hour = 0;
   return hour;
 }
 
-function on_new_tweet_submission(form) {
-  set_tweet_datetime();
+Twitinerary.prototype.__on_new_tweet_submission = function() {
+  this.__set_tweet_datetime();
   $.ajax({url: '/tweets/new',
           type: 'POST',
-          data: $(form).serialize(),
+          data: this.__new_tweet_form.serialize(),
           success: function() {
             console.log('Hooray!');
           },
