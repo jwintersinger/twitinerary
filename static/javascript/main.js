@@ -1,9 +1,10 @@
 $(document).ready(function() {
-  new Twitinerary($('#new-tweet'));
+  new Twitinerary( $('#new-tweet'), new Notifier($('#notifier')) );
 });
 
-function Twitinerary(new_tweet_form) {
+function Twitinerary(new_tweet_form, notifier) {
   this.__new_tweet_form = new_tweet_form;
+  this.__notifier = notifier;
   var self = this;
   this.__new_tweet_form.submit(function() { return self.__on_new_tweet_submission(); });
 }
@@ -42,10 +43,12 @@ Twitinerary.prototype.__convert_24_based_hour_to_12_based_hour = function(hour, 
 
 Twitinerary.prototype.__on_new_tweet_submission = function() {
   this.__set_tweet_datetime();
+  var self = this;
   $.ajax({url: '/tweets/new',
           type: 'POST',
           data: this.__new_tweet_form.serialize(),
           success: function() {
+            self.__notifier.notify_success('Yipee!');
             console.log('Hooray!');
           },
           error: function() {

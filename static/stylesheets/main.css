@@ -1,0 +1,13 @@
+#notifier {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  background-color: #aba;
+  z-index: 999;
+  display: none;
+}
+
+#notifier p {
+  padding: 0.4em;
+}
