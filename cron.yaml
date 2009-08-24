@@ -1,0 +1,4 @@
+cron:
+- description: Send scheduled Tweets.
+  url: /tweets/send
+  schedule: every 1 minutes

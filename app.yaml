@@ -1,0 +1,15 @@
+application: twitinerary
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /javascript
+  static_dir: static/javascript
+- url: /stylesheets
+  static_dir: static/stylesheets
+- url: /tweets/send
+  script: twitinerary.py
+  login: admin
+- url: /.*
+  script: twitinerary.py
