@@ -47,7 +47,13 @@ Twitinerary.prototype.__on_new_tweet_submission = function() {
   $.ajax({url: '/tweets/new',
           type: 'POST',
           data: this.__new_tweet_form.serialize(),
-          success: function() { self.__notifier.notify_success('Yipee!'); },
-          error: function() { self.__notifier.notify_failure('Oh, dear.'); } });
+          success: function(response, status) {
+            console.log([response, status]);
+            self.__notifier.notify_success(response);
+          },
+          error: function(xhr, status, error) {
+            console.log([xhr, status, error]);
+            self.__notifier.notify_failure(xhr.responseText);
+          } });
   return false;
 }

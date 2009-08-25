@@ -41,8 +41,19 @@ class Scheduler(webapp.RequestHandler):
     tweet.tweet    = self.request.get('tweet')
     tweet.datetime = datetime.utcfromtimestamp(float(self.request.get('datetime')))
 
-    tweet.put()
-    # No explicit response returns empty HTTP 200.
+    self.response.headers['Content-Type'] = 'text/plain'
+    if Twitterer(tweet.username, tweet.password).verify_credentials():
+      tweet.put()
+      self.response.set_status(200)
+      self.response.out.write('Woohoo! Your Tweet has been scheduled.')
+    else:
+      self.response.set_status(401)
+      self.response.headers['Content-Type'] = 'text/plain'
+      self.response.out.write('Authentication with Twitter failed. Please check your username and password.')
+
+  def __verify_credentials(self, username, password):
+    response = urlfetch.fetch('http://twitter.com/account/verify_credentials.json')
+
 
 
 class Tweeter(webapp.RequestHandler):
@@ -52,17 +63,33 @@ class Tweeter(webapp.RequestHandler):
     tweets = ScheduledTweet.all()
     tweets.filter('datetime <=', datetime.utcnow())
     for tweet in tweets:
-      self.__tweet(tweet)
-      tweet.delete()
+      # TODO: add e-mail notification (or some other handling) if tweet fails
+      if Twitterer(tweet.username, tweet.password).tweet(tweet.tweet):
+        tweet.delete()
 
-  def __tweet(self, tweet):
-    auth_string = 'Basic ' + base64.standard_b64encode('%s:%s' % (tweet.username, tweet.password))
-    response = urlfetch.fetch('http://twitter.com/statuses/update.json',
-                              urlencode({'status': tweet.tweet}),
-                              method=urlfetch.POST, headers={'Authorization': auth_string})
-    import cgi
-    return cgi.escape(repr([response.content, response.status_code, response.headers]))
 
+#===========
+# Miscellany
+#===========
+class Twitterer:
+  def __init__(self, username, password):
+    self.__username = username
+    self.__password = password
+    self.__base_url = 'http://twitter.com'
+
+  def tweet(self, tweet):
+    response = self.__fetch('/statuses/update.json', {'status': tweet})
+    # TODO: report error given in response.content, if it occurred
+    return response.status_code == 200
+
+  def verify_credentials(self):
+    response = self.__fetch('/account/verify_credentials.json', method=urlfetch.GET)
+    return response.status_code == 200
+
+  def __fetch(self, url, params={}, method=urlfetch.POST):
+    auth = 'Basic ' + base64.standard_b64encode('%s:%s' % (self.__username, self.__password))
+    return urlfetch.fetch(self.__base_url + url, urlencode(params),
+                          method=method, headers={'Authorization': auth})
 
 
 application = webapp.WSGIApplication([
