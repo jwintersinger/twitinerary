@@ -17,7 +17,7 @@
 
     <h1>Twitinerary</h1>
 
-    <form id="new-tweet" action="/tweets/new/" method="post">
+    <form id="new-tweet" action="{% url twitinerary.views.schedule %}" method="post">
       <ol>
         <li>
           <p>Enter your Twitter username and password.</p>

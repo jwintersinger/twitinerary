@@ -13,7 +13,7 @@ def home(request):
 
   return direct_to_template(request, 'index.html', {'tweets': tweets, 'days': days})
 
-def scheduler(request):
+def schedule(request):
   tweet = ScheduledTweet()
   tweet.username = request.POST['username']
   tweet.password = request.POST['password']
@@ -30,7 +30,7 @@ def scheduler(request):
 
 # Should be a POST since request changes state of datastore, but (I believe) App Engine
 # cron will only perform GET requests.
-def tweeter(request):
+def mass_tweet(request):
   tweets = ScheduledTweet.all()
   tweets.filter('datetime <=', datetime.utcnow())
   for tweet in tweets:
