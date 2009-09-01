@@ -1,15 +1,20 @@
 application: twitinerary
-version: 1
+version: 2
 runtime: python
 api_version: 1
 
+default_expiration: '3650d'
+
 handlers:
-- url: /javascript
-  static_dir: static/javascript
-- url: /stylesheets
-  static_dir: static/stylesheets
-- url: /tweets/send
-  script: twitinerary.py
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  secure: optional
   login: admin
+
+- url: /media
+  static_dir: media
+  secure: optional
+
 - url: /.*
-  script: twitinerary.py
+  script: common/appenginepatch/main.py
+  secure: optional

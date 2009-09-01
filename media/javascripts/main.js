@@ -44,8 +44,8 @@ Twitinerary.prototype.__convert_24_based_hour_to_12_based_hour = function(hour, 
 Twitinerary.prototype.__on_new_tweet_submission = function() {
   this.__set_tweet_datetime();
   var self = this;
-  $.ajax({url: '/tweets/new',
-          type: 'POST',
+  $.ajax({url: this.__new_tweet_form[0].action,
+          type: this.__new_tweet_form[0].method,
           data: this.__new_tweet_form.serialize(),
           success: function(response, status) {
             console.log([response, status]);
