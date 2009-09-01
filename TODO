@@ -1,8 +1,14 @@
-Protect URLs used by cron so can't be accessed by users
+==========
+Short term
+==========
 Some sort of session support so that user need not type username/password on every visit
-More secure alternative to HTTP basic auth with Twitter?
 Investigate autoescaping templates -- currently vulnerable to XSS
-Implement error detection/handling when posting Tweets
 Support for deleting Tweets in queue
 Resource limits -- limit number of Tweets in queue, perhaps also number of Tweets posted in given timespan
-Register app with Twitter so doesn't just show that posted "from API"
+
+=========
+Long term
+=========
+OAuth:
+  More secure alternative to HTTP basic auth with Twitter?
+  Register app with Twitter so doesn't just show that posted "from API"
