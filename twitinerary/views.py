@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.views.generic.simple import direct_to_template
-from models import ScheduledTweet, Twitterer
+from models import ScheduledTweet, Twitterer, User
 from datetime import date, datetime, timedelta
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -15,15 +15,14 @@ def home(request):
   return direct_to_template(request, 'index.html', {'tweets': tweets, 'days': days})
 
 def schedule(request):
-  tweet = ScheduledTweet()
-  tweet.username = request.POST['username']
-  tweet.password = request.POST['password']
-  tweet.tweet    = request.POST['tweet']
-  tweet.datetime = datetime.utcfromtimestamp(float(request.POST['datetime']))
-
-  if Twitterer(tweet.username, tweet.password).verify_credentials():
+  user = request.session.get('user') or User(request.POST['username'], request.POST['password'])
+  if Twitterer(user).verify_credentials():
+    tweet = ScheduledTweet(username = user.username,
+                           password = user.password,
+                           tweet    = request.POST['tweet'],
+                           datetime = datetime.utcfromtimestamp(float(request.POST['datetime'])) )
     tweet.put()
-    request.session['user'] = tweet.username
+    request.session['user'] = user
     return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
   else:
     return HttpResponse('Authentication with Twitter failed. Please check your username and password.',
@@ -33,7 +32,7 @@ def schedule(request):
 def review(request):
   tweets = ScheduledTweet.all()
   # TODO: require login.
-  tweets.filter('username =', request.session['user'])
+  tweets.filter('username =', request.session['user'].username)
   tweets.order('-datetime')
   return direct_to_template(request, 'review.html', {'tweets': tweets})
 

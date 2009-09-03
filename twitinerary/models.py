@@ -10,9 +10,8 @@ import base64
 from google.appengine.api import urlfetch
 from urllib import urlencode
 class Twitterer:
-  def __init__(self, username, password):
-    self.__username = username
-    self.__password = password
+  def __init__(self, user):
+    self.__user     = user
     self.__base_url = 'http://twitter.com'
 
   def tweet(self, tweet):
@@ -25,6 +24,11 @@ class Twitterer:
     return response.status_code == 200
 
   def __fetch(self, url, params={}, method=urlfetch.POST):
-    auth = 'Basic ' + base64.standard_b64encode('%s:%s' % (self.__username, self.__password))
+    auth = 'Basic ' + base64.standard_b64encode('%s:%s' % (self.__user.username, self.__user.password))
     return urlfetch.fetch(self.__base_url + url, urlencode(params),
                           method=method, headers={'Authorization': auth})
+
+class User:
+  def __init__(self, username, password):
+    self.username = username
+    self.password = password

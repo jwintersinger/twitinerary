@@ -19,7 +19,7 @@
 
     <p>
     {% if request.session.user %}
-      Logged in as {{ request.session.user|default:"nobody" }}.
+      Logged in as {{ request.session.user.username }}.
       (<a href="{% url twitinerary.views.logout %}">Log out</a>)
       (<a href="{% url twitinerary.views.review %}">Review Tweets</a>)
     {% else %}
