@@ -37,6 +37,11 @@ def review(request):
   tweets.order('-datetime')
   return direct_to_template(request, 'review.html', {'tweets': tweets})
 
+def delete(request):
+  if request.method == 'POST' and request.POST['key']:
+    ScheduledTweet.get(request.POST['key']).delete()
+  return HttpResponseRedirect(reverse(review))
+
 # Should be a POST since request changes state of datastore, but (I believe) App Engine
 # cron will only perform GET requests.
 def mass_tweet(request):
