@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Twitinerary</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ MEDIA_URL }}stylesheets/main.css" />
+    <script type="text/javascript"
+      src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/notifier.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/main.js"></script>
+  </head>
+
+  <body>
+    <div id="notifier">
+      <p></p>
+      <input id="dismiss-notification" type="button" value="OK" />
+    </div>
+
+    <h1>Twitinerary</h1>
+
+    <p>Logged in as {{ request.session.user|default:"nobody" }}</p>
+    
+    {% block content %}{% endblock %}
+  </body>
+</html>

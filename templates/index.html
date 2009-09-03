@@ -1,66 +1,45 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Twitinerary</title>
-    <link rel="stylesheet" type="text/css" media="screen" href="{{ MEDIA_URL }}stylesheets/main.css" />
-    <script type="text/javascript"
-      src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/notifier.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/main.js"></script>
-  </head>
+{% extends "base.html" %}
+{% block content %}
+  <form id="new-tweet" action="{% url twitinerary.views.schedule %}" method="post">
+    <ol>
+    {% if not request.session.user %}
+      <li>
+        <p>Enter your Twitter username and password.</p>
+        <p><input name="username" type="text" }value="ienjoytesting" />
+           <input name="password" type="password" value="happypants" /></p>
+      </li>
+    {% endif %}
 
-  <body>
-    <div id="notifier">
-      <p></p>
-      <input id="dismiss-notification" type="button" value="OK" />
-    </div>
+      <li>
+        <p>Enter your Tweet.</p>
+        <textarea name="tweet" cols="40" rows="2">Tweet.</textarea>
+      </li>
 
-    <h1>Twitinerary</h1>
+      <li>
+        <p>When do you want it posted?</p>
+        <p>
+          <select name="date">
+          {% for day in days %}
+            <option value="{{ day|date:"Ymd" }}">{{ day }}</option>
+          {% endfor %}
+          </select>
+          at
+          <input name="hour" type="text" value="8" size="2" />:<input name="minute" type="text" value="00" size="2">
+          <select name="period">
+            <option value="am">a.m.</option>
+            <option value="pm">p.m.</option>
+          </select>
+          {# datetime calculated dynamically via Javascript prior to form submission. #}
+          <input name="datetime" type="hidden" />
+        </p>
+      </li>
+    </ol>
+    <p><input type="submit" value="Schedule it!" /></p>
+  </form>
 
-    <p>Logged in as {{ request.session.user|default:"nobody" }}</p>
-
-    <form id="new-tweet" action="{% url twitinerary.views.schedule %}" method="post">
-      <ol>
-      {% if not request.session.user %}
-        <li>
-          <p>Enter your Twitter username and password.</p>
-          <p><input name="username" type="text" }value="ienjoytesting" />
-             <input name="password" type="password" value="happypants" /></p>
-        </li>
-      {% endif %}
-
-        <li>
-          <p>Enter your Tweet.</p>
-          <textarea name="tweet" cols="40" rows="2">Tweet.</textarea>
-        </li>
-
-        <li>
-          <p>When do you want it posted?</p>
-          <p>
-            <select name="date">
-            {% for day in days %}
-              <option value="{{ day|date:"Ymd" }}">{{ day }}</option>
-            {% endfor %}
-            </select>
-            at
-            <input name="hour" type="text" value="8" size="2" />:<input name="minute" type="text" value="00" size="2">
-            <select name="period">
-              <option value="am">a.m.</option>
-              <option value="pm">p.m.</option>
-            </select>
-            {# datetime calculated dynamically via Javascript prior to form submission. #}
-            <input name="datetime" type="hidden" />
-          </p>
-        </li>
-      </ol>
-      <p><input type="submit" value="Schedule it!" /></p>
-    </form>
-
-    <ul>
-    {% for tweet in tweets %}
-    <li>[{{ tweet.username }}] [{{ tweet.datetime }}] {{ tweet.tweet }}</li>
-    {% endfor %}
-    </ul>
-  </body>
-</html>
-
+  <ul>
+  {% for tweet in tweets %}
+  <li>[{{ tweet.username }}] [{{ tweet.datetime }}] {{ tweet.tweet }}</li>
+  {% endfor %}
+  </ul>
+{% endblock %}
