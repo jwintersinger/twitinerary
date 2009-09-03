@@ -1,18 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-  <table>
-    <tr><th>Time</th><th>Tweet</th></tr>
-  {% for tweet in tweets %}
-    <tr>
-      <td>{{ tweet.datetime }}</td>
-      <td>
-        {{ tweet.tweet }}
-        <form action="{% url twitinerary.views.delete %}" method="post">
-          <input name="key" type="hidden" value="{{ tweet.key }}" />
-          <input type="submit" value="Delete" />
-        </form>
-      </td>
-    </tr>
-  {% endfor %}
-  </table>
+  {% if tweets %}
+    <table>
+      <tr><th>Time</th><th>Tweet</th></tr>
+    {% for tweet in tweets %}
+      <tr>
+        <td>{{ tweet.datetime }}</td>
+        <td>
+          {{ tweet.tweet }}
+          <form action="{% url twitinerary.views.delete %}" method="post">
+            <input name="key" type="hidden" value="{{ tweet.key }}" />
+            <input type="submit" value="Delete" />
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% else %}
+    <p>You haven't scheduled any Tweets.</p>
+  {% endif %}
 {% endblock %}
