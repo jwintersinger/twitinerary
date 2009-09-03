@@ -4,4 +4,5 @@ urlpatterns = patterns('twitinerary.views',
   url(r'^$',             'home'),
   url(r'^tweets/new/$',  'schedule'),
   url(r'^tweets/send/$', 'mass_tweet'),
+  url(r'^logout/$',      'logout'),
 )

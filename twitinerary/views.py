@@ -2,7 +2,8 @@
 from django.views.generic.simple import direct_to_template
 from models import ScheduledTweet, Twitterer
 from datetime import date, datetime, timedelta
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 def home(request):
   tweets = ScheduledTweet.all()
@@ -39,3 +40,10 @@ def mass_tweet(request):
     if Twitterer(tweet.username, tweet.password).tweet(tweet.tweet):
       tweet.delete()
   return HttpResponse()
+
+# Should be in its own separate application, perhaps, but this is the only user account-related view
+# I have at the moment, and so its presence here is acceptable.
+def logout(request):
+  if 'user' in request.session:
+    del request.session['user']
+  return HttpResponseRedirect(reverse(home))

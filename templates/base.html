@@ -17,7 +17,14 @@
 
     <h1>Twitinerary</h1>
 
-    <p>Logged in as {{ request.session.user|default:"nobody" }}</p>
+    <p>
+    {% if request.session.user %}
+      Logged in as {{ request.session.user|default:"nobody" }}.
+      <a href="{% url twitinerary.views.logout %}">Log out</a>.
+    {% else %}
+      Not logged in.
+    {% endif %}
+    </p>
     
     {% block content %}{% endblock %}
   </body>
