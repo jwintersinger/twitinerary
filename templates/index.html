@@ -2,7 +2,7 @@
 {% block content %}
   <form id="new-tweet" action="{% url twitinerary.views.schedule %}" method="post">
     <ol>
-    {% if not request.session.user %}
+    {% if not request.user.is_authenticated %}
       <li>
         <p>Enter your Twitter username and password.</p>
         <p><input name="username" type="text"     value="ienjoytesting" />
@@ -39,7 +39,7 @@
 
   <ul>
   {% for tweet in tweets %}
-  <li>[{{ tweet.username }}] [{{ tweet.datetime }}] {{ tweet.tweet }}</li>
+    <li>[{{ tweet.username }}] [{{ tweet.datetime }}] {{ tweet.tweet }}</li>
   {% endfor %}
   </ul>
 {% endblock %}

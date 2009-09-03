@@ -69,6 +69,7 @@ MIDDLEWARE_CLASSES = (
     'ragendja.sites.dynamicsite.DynamicSiteIDMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'twitinerary.middleware.UserMiddleware',
 )
 
 # Google authentication

@@ -5,6 +5,9 @@ Some sort of session support so that user need not type username/password on eve
 Investigate autoescaping templates -- currently vulnerable to XSS
 Support for deleting Tweets in queue
 Resource limits -- limit number of Tweets in queue, perhaps also number of Tweets posted in given timespan
+Eliminate possible exceptions due to dereferencing non-existent keys
+Insitute usage limits
+Track IP, date of submission, etc.
 
 =========
 Long term

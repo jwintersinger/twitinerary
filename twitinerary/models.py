@@ -28,7 +28,17 @@ class Twitterer:
     return urlfetch.fetch(self.__base_url + url, urlencode(params),
                           method=method, headers={'Authorization': auth})
 
-class User:
+class AuthenticatedUser():
   def __init__(self, username, password):
     self.username = username
     self.password = password
+
+  def is_authenticated(self):
+    return True
+
+class UnauthenticatedUser():
+  def __init__(self):
+    self.username = 'Unauthenticated'
+
+  def is_authenticated(self):
+    return False
