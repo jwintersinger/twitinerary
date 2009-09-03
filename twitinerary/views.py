@@ -17,14 +17,14 @@ def home(request):
 def schedule(request):
   user = request.user
   if not user.is_authenticated():
-    user = AuthenticatedUser(request.POST['username'], request.POST['password'])
+    user = AuthenticatedUser(request.POST.get('username'), request.POST.get('password'))
 
   if Twitterer(user).verify_credentials():
     request.session['user'] = user
     tweet = ScheduledTweet(username = user.username,
                            password = user.password,
-                           tweet    = request.POST['tweet'],
-                           datetime = datetime.utcfromtimestamp(float(request.POST['datetime'])) )
+                           tweet    = request.POST.get('tweet'),
+                           datetime = datetime.utcfromtimestamp(float(request.POST.get('datetime', 0))) )
     tweet.put()
     return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
   else:
@@ -40,7 +40,7 @@ def review(request):
 
 def delete(request):
   if request.method == 'POST' and request.POST['key']:
-    ScheduledTweet.get(request.POST['key']).delete()
+    ScheduledTweet.get(request.POST.get('key')).delete()
   return HttpResponseRedirect(reverse(review))
 
 # Should be a POST since request changes state of datastore, but (I believe) App Engine
