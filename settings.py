@@ -49,7 +49,7 @@ LANGUAGES = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.auth',
+    #'django.core.context_processors.auth',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
     'django.core.context_processors.i18n',
@@ -59,7 +59,7 @@ MIDDLEWARE_CLASSES = (
     'ragendja.middleware.ErrorMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # Django authentication
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    #'django.contrib.auth.middleware.AuthenticationMiddleware',
     # Google authentication
     #'ragendja.auth.middleware.GoogleAuthenticationMiddleware',
     # Hybrid Django/Google authentication

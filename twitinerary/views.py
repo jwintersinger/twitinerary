@@ -22,6 +22,7 @@ def schedule(request):
 
   if Twitterer(tweet.username, tweet.password).verify_credentials():
     tweet.put()
+    request.session['user'] = tweet.username
     return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
   else:
     return HttpResponse('Authentication with Twitter failed. Please check your username and password.',

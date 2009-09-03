@@ -17,13 +17,17 @@
 
     <h1>Twitinerary</h1>
 
+    <p>Logged in as {{ request.session.user|default:"nobody" }}</p>
+
     <form id="new-tweet" action="{% url twitinerary.views.schedule %}" method="post">
       <ol>
+      {% if not request.session.user %}
         <li>
           <p>Enter your Twitter username and password.</p>
-          <p><input name="username" type="text" value="ienjoytesting" />
+          <p><input name="username" type="text" }value="ienjoytesting" />
              <input name="password" type="password" value="happypants" /></p>
         </li>
+      {% endif %}
 
         <li>
           <p>Enter your Tweet.</p>
