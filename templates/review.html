@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+  <table>
+    <tr><th>Time</th><th>Tweet</th></tr>
+  {% for tweet in tweets %}
+    <tr><td>{{ tweet.datetime }}</td><td>{{ tweet.tweet }}</td></tr>
+  {% endfor %}
+  </table>
+{% endblock %}

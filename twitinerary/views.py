@@ -30,6 +30,13 @@ def schedule(request):
       status=401, content_type='text/plain')
 
 
+def review(request):
+  tweets = ScheduledTweet.all()
+  # TODO: require login.
+  tweets.filter('username =', request.session['user'])
+  tweets.order('-datetime')
+  return direct_to_template(request, 'review.html', {'tweets': tweets})
+
 # Should be a POST since request changes state of datastore, but (I believe) App Engine
 # cron will only perform GET requests.
 def mass_tweet(request):
