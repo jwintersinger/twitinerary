@@ -22,7 +22,13 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 10 times in query history.
+# Used 9 times in query history.
+- kind: twitinerary_scheduledtweet
+  properties:
+  - name: tweeted
+  - name: created_at
+
+# Used 12 times in query history.
 - kind: twitinerary_scheduledtweet
   properties:
   - name: tweeted
