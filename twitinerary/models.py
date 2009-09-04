@@ -6,6 +6,7 @@ class ScheduledTweet(db.Model):
   post_at    = db.DateTimeProperty()
   created_at = db.DateTimeProperty(auto_now_add = True)
   ip_address = db.StringProperty()
+  tweeted    = db.BooleanProperty(default = False)
 
 import base64
 from google.appengine.api import urlfetch

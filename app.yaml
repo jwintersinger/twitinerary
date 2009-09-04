@@ -15,7 +15,11 @@ handlers:
   static_dir: media
   secure: optional
 
-- url: /tweets/send/
+- url: /tweets/batch_send/
+  script: common/appenginepatch/main.py
+  login: admin
+
+- url: /tweets/batch_delete/
   script: common/appenginepatch/main.py
   login: admin
 

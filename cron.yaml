@@ -1,4 +1,8 @@
 cron:
 - description: Send scheduled Tweets.
-  url: /tweets/send/
+  url: /tweets/batch_send/
   schedule: every 1 minutes
+
+- description: Delete sent Tweets.
+  url: /tweets/batch_delete/
+  schedule: every 1 hours

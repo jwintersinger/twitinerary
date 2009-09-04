@@ -47,13 +47,22 @@ def delete(request):
 
 # Should be a POST since request changes state of datastore, but (I believe) App Engine
 # cron will only perform GET requests.
-def mass_tweet(request):
+def batch_tweet(request):
   tweets = ScheduledTweet.all()
   tweets.filter('post_at  <=', datetime.utcnow())
+  tweets.filter('tweeted =', False)
   for tweet in tweets:
     # TODO: add e-mail notification (or some other handling) if tweet fails
     if Twitterer(AuthenticatedUser(tweet.username, tweet.password)).tweet(tweet):
-      tweet.delete()
+      tweet.tweeted = True
+      tweet.put()
+  return HttpResponse()
+
+def batch_delete(request):
+  tweets = ScheduledTweet.all()
+  tweets.filter('tweeted =', True)
+  for tweet in tweets:
+    tweet.delete()
   return HttpResponse()
 
 # Should be in its own separate application, perhaps, but this is the only user account-related view
