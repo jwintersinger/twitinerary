@@ -1,8 +1,6 @@
 ==========
 Short term
 ==========
-Resource limits -- limit number of Tweets in queue, perhaps also number of Tweets posted in given timespan
-Track IP, date of submission, etc.
 Add login_required decorator to appropriate views.
 
 =========

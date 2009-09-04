@@ -69,6 +69,8 @@ def batch_tweet(request):
 def batch_delete(request):
   tweets = ScheduledTweet.all()
   tweets.filter('tweeted =', True)
+  # Delete all Tweets >= 24 hours old.
+  tweets.filter('created_at <=', datetime.utcnow() - timedelta(days=1))
   for tweet in tweets:
     tweet.delete()
   return HttpResponse()
