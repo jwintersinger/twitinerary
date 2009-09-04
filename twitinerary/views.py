@@ -14,6 +14,11 @@ def home(request):
 
   return direct_to_template(request, 'index.html', {'tweets': tweets, 'days': days})
 
+def too_many_tweets_sent(user):
+  tweets = ScheduledTweet.all()
+  tweets.filter('username =', user.username)
+  return tweets.count() >= 5
+
 def schedule(request):
   user = request.user
   if not user.is_authenticated():
@@ -23,6 +28,9 @@ def schedule(request):
     else:
       return HttpResponse('Authentication with Twitter failed. Please check your username and password.',
         status=401, content_type='text/plain')
+
+  if too_many_tweets_sent(user):
+    return HttpResponse('Too many Tweets sent.', status=403, content_type='text/plain')
 
   tweet = ScheduledTweet(username   = user.username,
                          password   = user.password,
