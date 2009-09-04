@@ -18,20 +18,20 @@ def schedule(request):
   user = request.user
   if not user.is_authenticated():
     user = AuthenticatedUser(request.POST.get('username'), request.POST.get('password'))
+    if Twitterer(user).verify_credentials():
+      request.session['user'] = user
+    else:
+      return HttpResponse('Authentication with Twitter failed. Please check your username and password.',
+        status=401, content_type='text/plain')
 
-  if Twitterer(user).verify_credentials():
-    request.session['user'] = user
-    tweet = ScheduledTweet(username   = user.username,
-                           password   = user.password,
-                           tweet      = request.POST.get('tweet'),
-                           post_at    = datetime.utcfromtimestamp( float(request.POST.get('post_at', 0)) ),
-                           ip_address = request.META.get('REMOTE_ADDR'),
-                           )
-    tweet.put()
-    return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
-  else:
-    return HttpResponse('Authentication with Twitter failed. Please check your username and password.',
-      status=401, content_type='text/plain')
+  tweet = ScheduledTweet(username   = user.username,
+                         password   = user.password,
+                         tweet      = request.POST.get('tweet'),
+                         post_at    = datetime.utcfromtimestamp( float(request.POST.get('post_at', 0)) ),
+                         ip_address = request.META.get('REMOTE_ADDR'),
+                         )
+  tweet.put()
+  return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
 
 def review(request):
   tweets = ScheduledTweet.all()
