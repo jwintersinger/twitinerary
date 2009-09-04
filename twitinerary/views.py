@@ -4,6 +4,7 @@ from models import ScheduledTweet, Twitterer, AuthenticatedUser
 from datetime import date, datetime, timedelta
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from google.appengine.ext.db import BadKeyError
 
 def home(request):
   tweets = ScheduledTweet.all()
@@ -50,8 +51,12 @@ def review(request):
   return direct_to_template(request, 'review.html', {'tweets': tweets})
 
 def delete(request):
-  if request.method == 'POST' and request.POST['key']:
-    ScheduledTweet.get(request.POST.get('key')).delete()
+  try:
+    tweet = ScheduledTweet.get(request.POST.get('key'))
+  except BadKeyError:
+    tweet = None
+  if request.method == 'POST' and tweet and tweet.username == request.user.username:
+    tweet.delete()
   return HttpResponseRedirect(reverse(review))
 
 # Should be a POST since request changes state of datastore, but (I believe) App Engine
