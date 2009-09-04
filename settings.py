@@ -102,6 +102,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'appenginepatcher',
     'ragendja',
+    'twitinerary',
     #'registration',
     #'mediautils',
 )
