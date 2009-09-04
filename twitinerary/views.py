@@ -45,6 +45,7 @@ def review(request):
   tweets = ScheduledTweet.all()
   # TODO: require login.
   tweets.filter('username =', request.user.username)
+  tweets.filter('tweeted =', False)
   tweets.order('-post_at')
   return direct_to_template(request, 'review.html', {'tweets': tweets})
 
