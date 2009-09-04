@@ -34,3 +34,10 @@ indexes:
   - name: username
   - name: datetime
     direction: desc
+
+# Used once in query history.
+- kind: twitinerary_scheduledtweet
+  properties:
+  - name: username
+  - name: post_at
+    direction: desc
