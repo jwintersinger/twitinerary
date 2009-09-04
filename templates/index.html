@@ -29,8 +29,8 @@
             <option value="am">a.m.</option>
             <option value="pm">p.m.</option>
           </select>
-          {# datetime calculated dynamically via Javascript prior to form submission. #}
-          <input name="datetime" type="hidden" />
+          {# post_at calculated dynamically via Javascript prior to form submission. #}
+          <input name="post_at" type="hidden" />
         </p>
       </li>
     </ol>
@@ -39,7 +39,7 @@
 
   <ul>
   {% for tweet in tweets %}
-    <li>[{{ tweet.username }}] [{{ tweet.datetime }}] {{ tweet.tweet }}</li>
+    <li>[{{ tweet.username }}] [{{ tweet.post_at }}] {{ tweet.tweet }}</li>
   {% endfor %}
   </ul>
 {% endblock %}

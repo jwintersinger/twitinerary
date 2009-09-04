@@ -1,12 +1,9 @@
 ==========
 Short term
 ==========
-Some sort of session support so that user need not type username/password on every visit
-Investigate autoescaping templates -- currently vulnerable to XSS
-Support for deleting Tweets in queue
 Resource limits -- limit number of Tweets in queue, perhaps also number of Tweets posted in given timespan
-Insitute usage limits
 Track IP, date of submission, etc.
+Add login_required decorator to appropriate views.
 
 =========
 Long term

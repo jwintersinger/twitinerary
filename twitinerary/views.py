@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 
 def home(request):
   tweets = ScheduledTweet.all()
-  tweets.order('-datetime')
+  tweets.order('-post_at')
 
   today = date.today()
   days = [today + timedelta(days=n) for n in range(4)]
@@ -21,10 +21,12 @@ def schedule(request):
 
   if Twitterer(user).verify_credentials():
     request.session['user'] = user
-    tweet = ScheduledTweet(username = user.username,
-                           password = user.password,
-                           tweet    = request.POST.get('tweet'),
-                           datetime = datetime.utcfromtimestamp(float(request.POST.get('datetime', 0))) )
+    tweet = ScheduledTweet(username   = user.username,
+                           password   = user.password,
+                           tweet      = request.POST.get('tweet'),
+                           post_at    = datetime.utcfromtimestamp( float(request.POST.get('post_at', 0)) ),
+                           ip_address = request.META.get('REMOTE_ADDR'),
+                           )
     tweet.put()
     return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
   else:
@@ -35,7 +37,7 @@ def review(request):
   tweets = ScheduledTweet.all()
   # TODO: require login.
   tweets.filter('username =', request.user.username)
-  tweets.order('-datetime')
+  tweets.order('-post_at ')
   return direct_to_template(request, 'review.html', {'tweets': tweets})
 
 def delete(request):
@@ -47,7 +49,7 @@ def delete(request):
 # cron will only perform GET requests.
 def mass_tweet(request):
   tweets = ScheduledTweet.all()
-  tweets.filter('datetime <=', datetime.utcnow())
+  tweets.filter('post_at  <=', datetime.utcnow())
   for tweet in tweets:
     # TODO: add e-mail notification (or some other handling) if tweet fails
     if Twitterer(AuthenticatedUser(tweet.username, tweet.password)).tweet(tweet.tweet):

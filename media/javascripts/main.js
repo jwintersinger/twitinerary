@@ -9,12 +9,12 @@ function Twitinerary(new_tweet_form, notifier) {
   this.__new_tweet_form.submit(function() { return self.__on_new_tweet_submission(); });
 }
 
-Twitinerary.prototype.__set_tweet_datetime = function() {
+Twitinerary.prototype.__set_tweet_post_at = function() {
   // Sets time to number of seconds since Unix epoch.
-  this.__new_tweet_form.find('[name=datetime]').val( this.__calculate_tweet_datetime().getTime() / 1000.0 );
+  this.__new_tweet_form.find('[name=post_at]').val( this.__calculate_tweet_post_at().getTime() / 1000.0 );
 }
 
-Twitinerary.prototype.__calculate_tweet_datetime = function() {
+Twitinerary.prototype.__calculate_tweet_post_at = function() {
   var hour = this.__convert_24_based_hour_to_12_based_hour(
       parseInt(this.__new_tweet_form.find('[name=hour]').val(), 10),
       this.__new_tweet_form.find('[name=period]').val() );
@@ -42,7 +42,7 @@ Twitinerary.prototype.__convert_24_based_hour_to_12_based_hour = function(hour, 
 }
 
 Twitinerary.prototype.__on_new_tweet_submission = function() {
-  this.__set_tweet_datetime();
+  this.__set_tweet_post_at();
   var self = this;
   $.ajax({url: this.__new_tweet_form[0].action,
           type: this.__new_tweet_form[0].method,

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from google.appengine.ext import db
 class ScheduledTweet(db.Model):
-  username = db.StringProperty()
-  password = db.StringProperty()
-  tweet    = db.StringProperty(multiline=True)
-  datetime = db.DateTimeProperty()
+  username   = db.StringProperty()
+  password   = db.StringProperty()
+  tweet      = db.StringProperty(multiline=True)
+  post_at    = db.DateTimeProperty()
+  created_at = db.DateTimeProperty(auto_now_add = True)
+  ip_address = db.StringProperty()
 
 import base64
 from google.appengine.api import urlfetch
