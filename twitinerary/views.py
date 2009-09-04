@@ -52,7 +52,7 @@ def mass_tweet(request):
   tweets.filter('post_at  <=', datetime.utcnow())
   for tweet in tweets:
     # TODO: add e-mail notification (or some other handling) if tweet fails
-    if Twitterer(AuthenticatedUser(tweet.username, tweet.password)).tweet(tweet.tweet):
+    if Twitterer(AuthenticatedUser(tweet.username, tweet.password)).tweet(tweet):
       tweet.delete()
   return HttpResponse()
 
