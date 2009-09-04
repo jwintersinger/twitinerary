@@ -15,13 +15,13 @@
       <input id="dismiss-notification" type="button" value="OK" />
     </div>
 
-    <h1><a href="{% url twitinerary.views.home %}">Twitinerary</a></h1>
+    <h1><a href="{% url twitinerary.views.tweets.home %}">Twitinerary</a></h1>
 
     <p>
     {% if request.user.is_authenticated %}
       Logged in as {{ request.user.username }}.
-      (<a href="{% url twitinerary.views.logout %}">Log out</a>)
-      (<a href="{% url twitinerary.views.review %}">Review Tweets</a>)
+      (<a href="{% url twitinerary.views.user.logout %}">Log out</a>)
+      (<a href="{% url twitinerary.views.tweets.view %}">Review Tweets</a>)
     {% else %}
       Not logged in.
     {% endif %}

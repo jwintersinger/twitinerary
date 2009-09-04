@@ -8,7 +8,7 @@
         <td>{{ tweet.post_at }}</td>
         <td>
           {{ tweet.tweet }}
-          <form action="{% url twitinerary.views.delete %}" method="post">
+          <form action="{% url twitinerary.views.tweets.delete %}" method="post">
             <input name="key" type="hidden" value="{{ tweet.key }}" />
             <input type="submit" value="Delete" />
           </form>

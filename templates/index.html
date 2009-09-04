@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-  <form id="new-tweet" action="{% url twitinerary.views.schedule %}" method="post">
+  <form id="new-tweet" action="{% url twitinerary.views.tweets.new %}" method="post">
     <ol>
     {% if not request.user.is_authenticated %}
       <li>
