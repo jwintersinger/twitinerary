@@ -1,11 +1,17 @@
 ==========
 Short term
 ==========
-Add login_required decorator to appropriate views.
+Consolidate cron URLs in app.yaml
+Add login_required decorator to appropriate views
+Integrate URL shortener, image uploader
+Get Satisfaction support
+
+Design:
+  Finish all prose, other writing for app so that Alex may design to it
+  Determine new name for application
 
 =========
 Long term
 =========
-OAuth:
-  More secure alternative to HTTP basic auth with Twitter?
-  Register app with Twitter so doesn't just show that posted "from API"
+Support multiple Twitter accounts?
+Show Tweets regarding application on homepage -- people who Tweet @account

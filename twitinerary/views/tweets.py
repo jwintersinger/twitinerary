@@ -57,3 +57,17 @@ def delete(request):
   if request.method == 'POST' and tweet and tweet.username == request.user.username:
     tweet.delete()
   return HttpResponseRedirect(reverse(view))
+
+from lib import oauth
+def oauth_test(request):
+  consumer_key = 'xDxIgRQFQegu5TWLv1IQ'
+  consumer_secret = 'jyKqZ1Hr5SlAiYDQBsDwuXdZPUp1UApA9HBEtvhpL1c'
+  client = oauth.TwitterClient(consumer_key, consumer_secret, request.build_absolute_uri())
+
+  if ('oauth_token' in request.GET) and ('oauth_verifier' in request.GET):
+    request_token = request.GET.get('oauth_token')
+    verifier = request.GET.get('oauth_verifier')
+    user_info = client.fetch('http://twitter.com/account/verify_credentials.json', request_token, verifier)
+    return HttpResponse(repr(user_info))
+  else:
+    return HttpResponseRedirect(client.get_authorization_url())
