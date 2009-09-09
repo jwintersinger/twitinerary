@@ -86,13 +86,7 @@ def get_oauth_client(service, key, secret, callback_url):
   else:
     raise Exception, "Unknown OAuth service %s" % service
 
-class OauthToken(db.Model):
-  service = db.StringProperty(required=True)
-  token = db.StringProperty(required=True)
-  secret = db.StringProperty(required=True)
-  created = db.DateTimeProperty(auto_now_add=True)
-
-class OauthRequestToken(OauthToken):
+class OauthRequestToken(db.Model):
   """Request Token.
 
   A temporary request token that we will use to authenticate a user with a
@@ -101,10 +95,10 @@ class OauthRequestToken(OauthToken):
 
   TODO: Implement a cron to clean out old tokens periodically.
   """
-  pass
-
-class OauthAccessToken(OauthToken):
-  pass
+  service = db.StringProperty(required=True)
+  token = db.StringProperty(required=True)
+  secret = db.StringProperty(required=True)
+  created = db.DateTimeProperty(auto_now_add=True)
 
 class OAuthClient():
   def __init__(self, service_name, consumer_key, consumer_secret, request_url,

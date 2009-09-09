@@ -4,6 +4,7 @@ from twitinerary.models import ScheduledTweet, Twitterer, AuthenticatedUser
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from google.appengine.ext.db import BadKeyError
+from lib import oauth as oa
 
 def home(request):
   tweets = ScheduledTweet.all()
@@ -22,26 +23,20 @@ def _too_many_tweets_sent(user):
 def new(request):
   user = request.user
   if not user.is_authenticated():
-    user = AuthenticatedUser(request.POST.get('username'), request.POST.get('password'))
-    if Twitterer(user).verify_credentials():
-      request.session['user'] = user
-    else:
-      return HttpResponse('Authentication with Twitter failed. Please check your username and password.',
-        status=401, content_type='text/plain')
-
+    return HttpResponse('Not authenticated.', status=401, content_type='text/plain')
   if _too_many_tweets_sent(user):
     return HttpResponse('Too many Tweets sent.', status=403, content_type='text/plain')
 
-  tweet = ScheduledTweet(username   = user.username,
-                         password   = user.password,
+  tweet = ScheduledTweet(user       = user,
                          tweet      = request.POST.get('tweet'),
                          post_at    = datetime.utcfromtimestamp( float(request.POST.get('post_at', 0)) ),
-                         ip_address = request.META.get('REMOTE_ADDR'),
-                         )
+                         ip_address = request.META.get('REMOTE_ADDR') )
   tweet.put()
   return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
 
 def view(request):
+  if not request.user.is_authenticated():
+    return HttpResponse('Not authenticated.', status=401, content_type='text/plain')
   tweets = ScheduledTweet.all()
   # TODO: require login.
   tweets.filter('username =', request.user.username)
@@ -58,16 +53,19 @@ def delete(request):
     tweet.delete()
   return HttpResponseRedirect(reverse(view))
 
-from lib import oauth
-def oauth_test(request):
+def oauth(request):
   consumer_key = 'xDxIgRQFQegu5TWLv1IQ'
   consumer_secret = 'jyKqZ1Hr5SlAiYDQBsDwuXdZPUp1UApA9HBEtvhpL1c'
-  client = oauth.TwitterClient(consumer_key, consumer_secret, request.build_absolute_uri())
+  client = oa.TwitterClient(consumer_key, consumer_secret, request.build_absolute_uri())
 
   if ('oauth_token' in request.GET) and ('oauth_verifier' in request.GET):
     request_token = request.GET.get('oauth_token')
     verifier = request.GET.get('oauth_verifier')
     user_info = client.fetch('http://twitter.com/account/verify_credentials.json', request_token, verifier)
-    return HttpResponse(repr(user_info))
+    username = user_info['screen_name']
+
+    user = AuthenticatedUser.get_or_insert(key_name = username, username = username)
+    request.session['user_key'] = user.key()
+    return HttpResponseRedirect(reverse(home))
   else:
     return HttpResponseRedirect(client.get_authorization_url())

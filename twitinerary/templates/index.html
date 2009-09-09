@@ -3,11 +3,7 @@
   <form id="new-tweet" action="{% url twitinerary.views.tweets.new %}" method="post">
     <ol>
     {% if not request.user.is_authenticated %}
-      <li>
-        <p>Enter your Twitter username and password.</p>
-        <p><input name="username" type="text"     value="ienjoytesting" />
-           <input name="password" type="password" value="happypants" /></p>
-      </li>
+      <li><a href="{% url twitinerary.views.tweets.oauth %}">Authenticate with Twitter</a>.</li>
     {% endif %}
 
       <li>

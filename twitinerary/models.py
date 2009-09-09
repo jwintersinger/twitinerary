@@ -1,16 +1,8 @@
-from google.appengine.ext import db
-class ScheduledTweet(db.Model):
-  username   = db.StringProperty()
-  password   = db.StringProperty()
-  tweet      = db.StringProperty(multiline=True)
-  post_at    = db.DateTimeProperty()
-  created_at = db.DateTimeProperty(auto_now_add = True)
-  ip_address = db.StringProperty()
-  tweeted    = db.BooleanProperty(default = False)
-
 import base64
+from google.appengine.ext import db
 from google.appengine.api import urlfetch
 from urllib import urlencode
+
 class Twitterer:
   def __init__(self, user):
     self.__user     = user
@@ -32,10 +24,10 @@ class Twitterer:
     headers.update(additional_headers)
     return urlfetch.fetch(self.__base_url + url, urlencode(params), method = method, headers = headers)
 
-class AuthenticatedUser():
-  def __init__(self, username, password):
-    self.username = username
-    self.password = password
+class AuthenticatedUser(db.Model):
+  username      = db.StringProperty(required=True)
+  access_token  = db.StringProperty()
+  access_secret = db.StringProperty()
 
   def is_authenticated(self):
     return True
@@ -46,3 +38,11 @@ class UnauthenticatedUser():
 
   def is_authenticated(self):
     return False
+
+class ScheduledTweet(db.Model):
+  user       = db.ReferenceProperty(AuthenticatedUser)
+  tweet      = db.StringProperty(multiline=True)
+  post_at    = db.DateTimeProperty()
+  created_at = db.DateTimeProperty(auto_now_add = True)
+  ip_address = db.StringProperty()
+  tweeted    = db.BooleanProperty(default = False)
