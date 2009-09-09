@@ -86,6 +86,7 @@ from urllib import unquote as urlunquote
 
 import logging
 
+
 class OauthRequestToken(db.Model):
   """Request Token.
 
@@ -98,6 +99,7 @@ class OauthRequestToken(db.Model):
   token = db.StringProperty(required=True)
   secret = db.StringProperty(required=True)
   created = db.DateTimeProperty(auto_now_add=True)
+
 
 class OAuthClient():
   def __init__(self, service_name, consumer_key, consumer_secret,
@@ -112,6 +114,35 @@ class OAuthClient():
     self.access_url = access_url
     self._user_agent = user_agent
     self._realm = self._url_prefix
+
+  def get_authorization_url(self, callback_url):
+    return "%s%s?oauth_token=%s" % (self._url_prefix, self._authorization_url,
+                                    self._get_request_token(callback_url))
+
+  def get_access_token(self, request_token, verifier):
+    """Exchange Request Token for Access Token. Returns (access_token, access_secret)."""
+    request_token, verifier = urlunquote(request_token), urlunquote(verifier)
+    request_secret = self._retrieve_request_secret(request_token)
+
+    access_request = self._make_request(self.access_url,
+                                       method            = 'POST',
+                                       token             = request_token,
+                                       secret            = request_secret,
+                                       additional_oauth  = {"oauth_verifier": verifier})
+    access_response = self._extract_credentials(access_request)
+    return (access_response["token"], access_response["secret"])
+
+  def fetch(self, resource_url, method='GET', payload={},
+            access_token=None, access_secret=None,
+            request_token=None, verifier=None):
+    """Must supply either request_token and verifier, or access_token and access_secret.
+       If the latter, the request_token is converted to an access_token."""
+    if request_token and verifier:
+      access_token, access_secret = self.get_access_token(request_token, verifier)
+    elif not (access_token and access_secret):
+      raise Exception, "Must pass request_token and verifier, or access_token and access_secret."
+    return self._make_request(resource_url, method=method, payload=payload,
+                             token=access_token, secret=access_secret)
 
   def _request_method_name_to_constant(self, name):
     methods = {
@@ -189,16 +220,6 @@ class OAuthClient():
     return urlfetch.fetch(url, payload=encoded_payload,
       method=self._request_method_name_to_constant(method), headers=headers)
     
-  def get_authorization_url(self, callback_url):
-    """Get Authorization URL.
-
-    Returns a service specific URL which contains an auth token. The user
-    should be redirected to this URL so that they can give consent to be
-    logged in.
-    """
-
-    raise NotImplementedError, "Must be implemented by a subclass"
-
   def _retrieve_request_secret(self, request_token):
     request_secret = memcache.get(self._get_memcache_request_token_key(request_token))
     if request_secret:
@@ -218,32 +239,6 @@ class OAuthClient():
         raise Exception, msg
       else:
         return request_secret.secret
-
-  def get_access_token(self, request_token, verifier):
-    """Exchange Request Token for Access Token. Returns (access_token, access_secret)."""
-    request_token, verifier = urlunquote(request_token), urlunquote(verifier)
-    request_secret = self._retrieve_request_secret(request_token)
-
-    access_request = self._make_request(self.access_url,
-                                       method            = 'POST',
-                                       token             = request_token,
-                                       secret            = request_secret,
-                                       additional_oauth  = {"oauth_verifier": verifier})
-    access_response = self._extract_credentials(access_request)
-    return (access_response["token"], access_response["secret"])
-
-  def fetch(self, resource_url, method='GET', payload={},
-            access_token=None, access_secret=None,
-            request_token=None, verifier=None):
-    """Must supply either request_token and verifier, or access_token and access_secret.
-       If the latter, the request_token is converted to an access_token."""
-    if request_token and verifier:
-      access_token, access_secret = self.get_access_token(request_token, verifier)
-    elif not (access_token and access_secret):
-      raise Exception, "Must pass request_token and verifier, or access_token and access_secret."
-    return self._make_request(resource_url, method=method, payload=payload,
-                             token=access_token, secret=access_secret)
-
 
   def _get_request_token(self, callback_url):
     """Get Request Token.
@@ -299,11 +294,6 @@ class OAuthClient():
       "token": token,
       "secret": secret
     }
-
-  def get_authorization_url(self, callback_url):
-    #return "%s/oauth/authorize?oauth_token=%s" % (self._url_prefix,
-        #self._get_request_token(callback_url))
-    return "%s%s?oauth_token=%s" % (self._url_prefix, self._authorization_url, self._get_request_token(callback_url))
 
 
 class TwitterClient(OAuthClient):
