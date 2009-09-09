@@ -75,7 +75,7 @@ def oauth(request):
                                            access_secret = access_secret)
     request.session['user_key'] = user.key()
     #resp = client.fetch('/statuses/update.json', method='POST', payload={'status': 'Socks.'},
-                        #access_token=access_token, access_secret=access_secret)
+        #access_token=access_token, access_secret=access_secret)
     #return HttpResponse(resp.content)
     return HttpResponseRedirect(reverse(home))
   else:
