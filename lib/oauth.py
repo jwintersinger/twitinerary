@@ -21,9 +21,13 @@
 #     not be used.
 #   * Removed duplication of protocol and domain name from URLs by supporting
 #     a URL prefix.
+#   * Permit non-GET requests (e.g., POST).
+#   * Added ability to send user agent string with requests.
+#   * OAuth parameters can be sent in the Authorization header rather than the
+#     request body or as part of the URL query string, as per the OAuth spec.
 #
 # TODO: add error checking, as requests to Twitter often seem to fail.
-# TODO: access_token should be POST; should support Authorization header
+# TODO: implement a cron to clean out old tokens periodically
 
 """
 A simple OAuth implementation for authenticating users with third party
@@ -89,7 +93,6 @@ class OauthRequestToken(db.Model):
   third party website. (We need to store the data while the user visits
   the third party website to authenticate themselves.)
 
-  TODO: Implement a cron to clean out old tokens periodically.
   """
   service = db.StringProperty(required=True)
   token = db.StringProperty(required=True)
@@ -107,6 +110,7 @@ class OAuthClient():
     self.request_url = request_url
     self.access_url = access_url
     self._user_agent = user_agent
+    self._realm = self._url_prefix
 
   def _request_method_name_to_constant(self, name):
     methods = {
@@ -118,14 +122,12 @@ class OAuthClient():
     }
     return methods[name]
 
-  def make_request(self, path, additional_params=None, method='GET',
-                   token="", secret="", protected=False):
+  def make_request(self, path, method='GET', payload={},
+                   additional_oauth={}, token="", secret=""):
     """Make Request.
 
     Make an authenticated request to any OAuth protected resource. At present
     only GET requests are supported.
-
-    If protected is equal to True, the Authorization: OAuth header will be set.
 
     A urlfetch response object is returned.
     """
@@ -135,7 +137,7 @@ class OAuthClient():
     url = "%s%s" % (self._url_prefix, path)
     method = method.upper()
 
-    params = {
+    oauth_params = {
       "oauth_consumer_key": self.consumer_key,
       "oauth_signature_method": "HMAC-SHA1",
       "oauth_timestamp": str(int(time())),
@@ -143,13 +145,15 @@ class OAuthClient():
       "oauth_version": "1.0"
     }
     if token:
-      params["oauth_token"] = token
-    if additional_params:
-      params.update(additional_params)
+      oauth_params["oauth_token"] = token
+    if additional_oauth:
+      oauth_params.update(additional_oauth)
 
     # Join all of the params together.
-    params_str = "&".join(["%s=%s" % (encode(k), encode(params[k]))
-                           for k in sorted(params)])
+    combined = oauth_params.copy()
+    combined.update(payload)
+    params_str = "&".join(["%s=%s" % (encode(k), encode(combined[k]))
+                           for k in sorted(combined)])
     # Join the entire message together per the OAuth specification.
     message = "&".join([encode(item) for item in (method, url, params_str)])
 
@@ -157,23 +161,26 @@ class OAuthClient():
     key = "%s&%s" % (self.consumer_secret, secret) # Note compulsory "&".
     signature = hmac(key, message, sha1)
     digest_base64 = signature.digest().encode("base64").strip()
-    params["oauth_signature"] = digest_base64
-
-    params_str = urlencode(params)
-    if method in ('POST', 'PUT'):
-      payload = params_str
-    else:
-      url = "%s?%s" % (url, params_str)
-      payload = None
+    oauth_params["oauth_signature"] = digest_base64
 
     headers = {}
-    if protected:
-      headers["Authorization"] = "OAuth"
+    if self._use_auth_header:
+      params_str = ", ".join(['%s="%s"' % (encode(k), encode(oauth_params[k])) for k in oauth_params])
+      headers["Authorization"] = 'OAuth realm="%s", %s' % (encode(self._realm), params_str)
+    else:
+      payload.update(oauth_params)
+
     if self._user_agent:
       headers["User-Agent"] = self._user_agent
 
-    return urlfetch.fetch(url, payload=payload,
-        method=self._request_method_name_to_constant(method), headers=headers)
+    encoded_payload = None
+    if method in ('POST', 'PUT'):
+      encoded_payload = urlencode(payload)
+    elif payload:
+      url = "%s?%s" % (url, urlencode(payload))
+
+    return urlfetch.fetch(url, payload=encoded_payload,
+      method=self._request_method_name_to_constant(method), headers=headers)
     
   def get_authorization_url(self, callback_url):
     """Get Authorization URL.
@@ -214,11 +221,11 @@ class OAuthClient():
                                        method            = 'POST',
                                        token             = request_token,
                                        secret            = request_secret,
-                                       additional_params = {"oauth_verifier": verifier})
+                                       additional_oauth  = {"oauth_verifier": verifier})
     access_response = self._extract_credentials(access_request)
     return (access_response["token"], access_response["secret"])
 
-  def fetch(self, resource_url, method='GET', params=None,
+  def fetch(self, resource_url, method='GET', payload={},
             access_token=None, access_secret=None,
             request_token=None, verifier=None):
     """Must supply either request_token and verifier, or access_token and access_secret.
@@ -227,8 +234,8 @@ class OAuthClient():
       access_token, access_secret = self.get_access_token(request_token, verifier)
     elif not (access_token and access_secret):
       raise Exception, "Must pass request_token and verifier, or access_token and access_secret."
-    return self.make_request(resource_url, method=method, additional_params=params,
-                             token=access_token, secret=access_secret, protected=True)
+    return self.make_request(resource_url, method=method, payload=payload,
+                             token=access_token, secret=access_secret)
 
 
   def _get_request_token(self, callback_url):
@@ -240,7 +247,7 @@ class OAuthClient():
     """
 
     response = self.make_request(self.request_url,
-        additional_params={"oauth_callback": callback_url})
+        additional_oauth={"oauth_callback": callback_url})
     request = self._extract_credentials(response)
     request_token, request_secret = request["token"], request["secret"]
 
@@ -297,6 +304,7 @@ class TwitterClient(OAuthClient):
   def __init__(self, consumer_key, consumer_secret, user_agent=""):
     """Constructor."""
     self._url_prefix = "http://twitter.com"
+    self._use_auth_header = True
 
     OAuthClient.__init__(self,
         "twitter",
