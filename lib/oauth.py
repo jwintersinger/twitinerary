@@ -97,7 +97,8 @@ class OauthRequestToken(db.Model):
   created = db.DateTimeProperty(auto_now_add=True)
 
 class OAuthClient():
-  def __init__(self, service_name, consumer_key, consumer_secret, request_url, access_url):
+  def __init__(self, service_name, consumer_key, consumer_secret,
+               request_url, access_url, user_agent=""):
     """ Constructor."""
 
     self.service_name = service_name
@@ -105,6 +106,7 @@ class OAuthClient():
     self.consumer_secret = consumer_secret
     self.request_url = request_url
     self.access_url = access_url
+    self._user_agent = user_agent
 
   def _request_method_name_to_constant(self, name):
     methods = {
@@ -167,6 +169,8 @@ class OAuthClient():
     headers = {}
     if protected:
       headers["Authorization"] = "OAuth"
+    if self._user_agent:
+      headers["User-Agent"] = self._user_agent
 
     return urlfetch.fetch(url, payload=payload,
         method=self._request_method_name_to_constant(method), headers=headers)
@@ -290,7 +294,7 @@ class TwitterClient(OAuthClient):
   authentication model.
   """
 
-  def __init__(self, consumer_key, consumer_secret):
+  def __init__(self, consumer_key, consumer_secret, user_agent=""):
     """Constructor."""
     self._url_prefix = "http://twitter.com"
 
@@ -299,7 +303,8 @@ class TwitterClient(OAuthClient):
         consumer_key,
         consumer_secret,
         "/oauth/request_token",
-        "/oauth/access_token")
+        "/oauth/access_token",
+        user_agent)
 
   def get_authorization_url(self, callback_url):
     """Get Authorization URL."""

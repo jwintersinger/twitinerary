@@ -7,7 +7,6 @@ Integrate URL shortener, image uploader
 Get Satisfaction support
 
 OAuth:
-  Ensure all requests that should be submitted via POST, are
   Add error detection/handling
   Move get_authorization_url() into base class
 Design:
