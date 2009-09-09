@@ -76,18 +76,6 @@ from urllib import unquote as urlunquote
 
 import logging
 
-
-def get_oauth_client(service, key, secret, callback_url):
-  """Get OAuth Client.
-
-  A factory that will return the appropriate OAuth client.
-  """
-
-  if service == "twitter":
-    return TwitterClient(key, secret, callback_url)
-  else:
-    raise Exception, "Unknown OAuth service %s" % service
-
 class OauthRequestToken(db.Model):
   """Request Token.
 
@@ -114,7 +102,7 @@ class OAuthClient():
     self.access_url = access_url
     self.callback_url = callback_url
 
-  def make_request(self, url, token="", secret="", additional_params=None,
+  def make_request(self, path, token="", secret="", additional_params=None,
                    protected=False):
     """Make Request.
 
@@ -150,6 +138,7 @@ class OAuthClient():
                            for k in sorted(params)])
 
     # Join the entire message together per the OAuth specification.
+    url = "%s%s" % (self._url_prefix, path)
     message = "&".join(["GET", encode(url), encode(params_str)])
 
     # Create a HMAC-SHA1 signature of the message.
@@ -280,15 +269,16 @@ class TwitterClient(OAuthClient):
 
   def __init__(self, consumer_key, consumer_secret, callback_url):
     """Constructor."""
+    self._url_prefix = "http://twitter.com"
 
     OAuthClient.__init__(self,
         "twitter",
         consumer_key,
         consumer_secret,
-        "http://twitter.com/oauth/request_token",
-        "http://twitter.com/oauth/access_token",
+        "/oauth/request_token",
+        "/oauth/access_token",
         callback_url)
 
   def get_authorization_url(self):
     """Get Authorization URL."""
-    return "http://twitter.com/oauth/authorize?oauth_token=%s" % self._get_request_token()
+    return "%s/oauth/authorize?oauth_token=%s" % (self._url_prefix, self._get_request_token())

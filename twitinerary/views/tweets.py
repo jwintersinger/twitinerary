@@ -64,8 +64,8 @@ def oauth(request):
     request_token = request.GET.get('oauth_token')
     verifier = request.GET.get('oauth_verifier')
     access_token, access_secret = client.get_access_token(request_token, verifier)
-    response = client.fetch_with_access_token(
-      'http://twitter.com/account/verify_credentials.json', access_token, access_secret)
+    response = client.fetch_with_access_token('/account/verify_credentials.json',
+                                              access_token, access_secret)
 
     user_info = json.loads(response.content)
     username = user_info['screen_name']
