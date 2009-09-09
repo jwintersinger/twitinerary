@@ -16,8 +16,14 @@
 #     than being limited to user details.
 #   * Changed nomenclature for consistency with OAuth spec:
 #     "auth_token" -> "request_token"
+#   * Moved specification of callback URL from constructor to call for
+#     authorization URL, preventing us from having to specify it when it will
+#     not be used.
+#   * Removed duplication of protocol and domain name from URLs by supporting
+#     a URL prefix.
 #
 # TODO: add error checking, as requests to Twitter often seem to fail.
+# TODO: access_token should be POST; should support Authorization header
 
 """
 A simple OAuth implementation for authenticating users with third party
@@ -100,8 +106,18 @@ class OAuthClient():
     self.request_url = request_url
     self.access_url = access_url
 
-  def make_request(self, path, token="", secret="", additional_params=None,
-                   protected=False):
+  def _request_method_name_to_constant(self, name):
+    methods = {
+      'GET': urlfetch.GET,
+      'POST': urlfetch.POST,
+      'HEAD': urlfetch.HEAD,
+      'PUT': urlfetch.PUT,
+      'DELETE': urlfetch.DELETE
+    }
+    return methods[name]
+
+  def make_request(self, path, additional_params=None, method='GET',
+                   token="", secret="", protected=False):
     """Make Request.
 
     Make an authenticated request to any OAuth protected resource. At present
@@ -111,9 +127,11 @@ class OAuthClient():
 
     A urlfetch response object is returned.
     """
-
     def encode(text):
       return urlquote(str(text), "")
+
+    url = "%s%s" % (self._url_prefix, path)
+    method = method.upper()
 
     params = {
       "oauth_consumer_key": self.consumer_key,
@@ -122,20 +140,16 @@ class OAuthClient():
       "oauth_nonce": str(getrandbits(64)),
       "oauth_version": "1.0"
     }
-
     if token:
       params["oauth_token"] = token
-
     if additional_params:
       params.update(additional_params)
 
     # Join all of the params together.
     params_str = "&".join(["%s=%s" % (encode(k), encode(params[k]))
                            for k in sorted(params)])
-
     # Join the entire message together per the OAuth specification.
-    url = "%s%s" % (self._url_prefix, path)
-    message = "&".join(["GET", encode(url), encode(params_str)])
+    message = "&".join([encode(item) for item in (method, url, params_str)])
 
     # Create a HMAC-SHA1 signature of the message.
     key = "%s&%s" % (self.consumer_secret, secret) # Note compulsory "&".
@@ -143,15 +157,20 @@ class OAuthClient():
     digest_base64 = signature.digest().encode("base64").strip()
     params["oauth_signature"] = digest_base64
 
-    # Construct and fetch the URL and return the result object.
-    url = "%s?%s" % (url, urlencode(params))
+    params_str = urlencode(params)
+    if method in ('POST', 'PUT'):
+      payload = params_str
+    else:
+      url = "%s?%s" % (url, params_str)
+      payload = None
 
     headers = {}
     if protected:
       headers["Authorization"] = "OAuth"
 
-    return urlfetch.fetch(url, headers=headers)
-
+    return urlfetch.fetch(url, payload=payload,
+        method=self._request_method_name_to_constant(method), headers=headers)
+    
   def get_authorization_url(self, callback_url):
     """Get Authorization URL.
 
@@ -188,18 +207,25 @@ class OAuthClient():
     request_secret = self._retrieve_request_secret(request_token)
 
     access_request = self.make_request(self.access_url,
+                                       method            = 'POST',
                                        token             = request_token,
                                        secret            = request_secret,
                                        additional_params = {"oauth_verifier": verifier})
     access_response = self._extract_credentials(access_request)
     return (access_response["token"], access_response["secret"])
 
-  def fetch_with_request_token(self, resource_url, request_token, verifier=""):
-    access_token, access_secret = self.get_access_token(request_token, verifier)
-    return self.fetch_with_access_token(resource_url, access_token, access_secret)
+  def fetch(self, resource_url, method='GET', params=None,
+            access_token=None, access_secret=None,
+            request_token=None, verifier=None):
+    """Must supply either request_token and verifier, or access_token and access_secret.
+       If the latter, the request_token is converted to an access_token."""
+    if request_token and verifier:
+      access_token, access_secret = self.get_access_token(request_token, verifier)
+    elif not (access_token and access_secret):
+      raise Exception, "Must pass request_token and verifier, or access_token and access_secret."
+    return self.make_request(resource_url, method=method, additional_params=params,
+                             token=access_token, secret=access_secret, protected=True)
 
-  def fetch_with_access_token(self, resource_url, access_token, access_secret):
-    return self.make_request(resource_url, token=access_token, secret=access_secret, protected=True)
 
   def _get_request_token(self, callback_url):
     """Get Request Token.
@@ -246,7 +272,7 @@ class OAuthClient():
       secret = parsed_results["oauth_token_secret"][0]
 
     if not (token and secret) or result.status_code != 200:
-      msg = "Could not extract token/secret: %s" % result.content
+      msg = "Could not extract token/secret from response: %s" % result.content
       logging.error(msg)
       raise Exception, msg
 
