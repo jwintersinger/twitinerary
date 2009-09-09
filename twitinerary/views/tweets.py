@@ -61,10 +61,15 @@ def oauth(request):
   if ('oauth_token' in request.GET) and ('oauth_verifier' in request.GET):
     request_token = request.GET.get('oauth_token')
     verifier = request.GET.get('oauth_verifier')
-    user_info = client.fetch('http://twitter.com/account/verify_credentials.json', request_token, verifier)
-    username = user_info['screen_name']
+    access_token, access_secret = client.get_access_token(request_token, verifier)
+    user_info = client.fetch_with_access_token(
+      'http://twitter.com/account/verify_credentials.json', access_token, access_secret)
 
-    user = AuthenticatedUser.get_or_insert(key_name = username, username = username)
+    username = user_info['screen_name']
+    user = AuthenticatedUser.get_or_insert(key_name = username,
+                                           username = username,
+                                           access_token = access_token,
+                                           access_secret = access_secret)
     request.session['user_key'] = user.key()
     return HttpResponseRedirect(reverse(home))
   else:

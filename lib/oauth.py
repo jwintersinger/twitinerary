@@ -195,19 +195,23 @@ class OAuthClient():
       else:
         return request_secret.secret
 
-  def _retrieve_access_token(self, request_token, request_secret, verifier):
-    # Exchange Request Token for Access Token.
+  def get_access_token(self, request_token, verifier):
+    """Exchange Request Token for Access Token. Returns (access_token, access_secret)."""
+    request_token, verifier = urlunquote(request_token), urlunquote(verifier)
+    request_secret = self._retrieve_request_secret(request_token)
+
     access_request = self.make_request(self.access_url,
-                                       token=request_token,
-                                       secret=request_secret,
-                                       additional_params={"oauth_verifier": verifier})
+                                       token             = request_token,
+                                       secret            = request_secret,
+                                       additional_params = {"oauth_verifier": verifier})
     access_response = self._extract_credentials(access_request)
     return (access_response["token"], access_response["secret"])
 
-  def fetch(self, resource_url, request_token, verifier=""):
-    request_token, verifier = urlunquote(request_token), urlunquote(verifier)
-    request_secret = self._retrieve_request_secret(request_token)
-    access_token, access_secret = self._retrieve_access_token(request_token, request_secret, verifier)
+  def fetch_with_request_token(self, resource_url, request_token, verifier=""):
+    access_token, access_secret = self.get_access_token(request_token, verifier)
+    return self.fetch_with_access_token(resource_url, access_token, access_secret)
+
+  def fetch_with_access_token(self, resource_url, access_token, access_secret):
     resource = self.make_request(resource_url, token=access_token, secret=access_secret, protected=True)
     # TODO: encoding always JSON?
     return json.loads(resource.content)
@@ -224,13 +228,13 @@ class OAuthClient():
     request = self._extract_credentials(response)
     request_token, request_secret = request["token"], request["secret"]
 
-    # Save the auth token and secret in our database.
-    auth = OauthRequestToken(service=self.service_name,
-                        token=request_token,
-                        secret=request_secret)
-    auth.put()
+    # Save the request token and secret in our database.
+    request = OauthRequestToken(service=self.service_name,
+                                token=request_token,
+                                secret=request_secret)
+    request.put()
 
-    # Add the secret to memcache as well.
+    # Add the request secret to memcache as well.
     memcache.set(self._get_memcache_request_token_key(request_token),
                  request_secret, time=20*60) # Save for 20 minutes
     return request_token
