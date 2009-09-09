@@ -16,6 +16,8 @@
 #     than being limited to user details.
 #   * Changed nomenclature for consistency with OAuth spec:
 #     "auth_token" -> "request_token"
+#
+# TODO: add error checking, as requests to Twitter often seem to fail.
 
 """
 A simple OAuth implementation for authenticating users with third party
@@ -212,9 +214,7 @@ class OAuthClient():
     return self.fetch_with_access_token(resource_url, access_token, access_secret)
 
   def fetch_with_access_token(self, resource_url, access_token, access_secret):
-    resource = self.make_request(resource_url, token=access_token, secret=access_secret, protected=True)
-    # TODO: encoding always JSON?
-    return json.loads(resource.content)
+    return self.make_request(resource_url, token=access_token, secret=access_secret, protected=True)
 
   def _get_request_token(self):
     """Get Request Token.

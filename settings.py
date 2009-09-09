@@ -138,3 +138,5 @@ DATABASE_OPTIONS = {
 from ragendja.settings_post import *
 # MEDIA_URL set in ragendja.settings_post, so I must override it below here.
 MEDIA_URL = '/media/'
+
+from settings_application import *

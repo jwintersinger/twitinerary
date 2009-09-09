@@ -1,9 +1,11 @@
 from datetime import date, datetime, timedelta
-from django.views.generic.simple import direct_to_template
-from twitinerary.models import ScheduledTweet, Twitterer, AuthenticatedUser
-from django.http import HttpResponse, HttpResponseRedirect
+from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.utils import simplejson as json
+from django.views.generic.simple import direct_to_template
 from google.appengine.ext.db import BadKeyError
+from twitinerary.models import ScheduledTweet, Twitterer, AuthenticatedUser
 from lib import oauth as oa
 
 def home(request):
@@ -54,21 +56,22 @@ def delete(request):
   return HttpResponseRedirect(reverse(view))
 
 def oauth(request):
-  consumer_key = 'xDxIgRQFQegu5TWLv1IQ'
-  consumer_secret = 'jyKqZ1Hr5SlAiYDQBsDwuXdZPUp1UApA9HBEtvhpL1c'
-  client = oa.TwitterClient(consumer_key, consumer_secret, request.build_absolute_uri())
+  client = oa.TwitterClient(settings.OAUTH_CONSUMER_KEY,
+                            settings.OAUTH_CONSUMER_SECRET,
+                            request.build_absolute_uri())
 
   if ('oauth_token' in request.GET) and ('oauth_verifier' in request.GET):
     request_token = request.GET.get('oauth_token')
     verifier = request.GET.get('oauth_verifier')
     access_token, access_secret = client.get_access_token(request_token, verifier)
-    user_info = client.fetch_with_access_token(
+    response = client.fetch_with_access_token(
       'http://twitter.com/account/verify_credentials.json', access_token, access_secret)
 
+    user_info = json.loads(response.content)
     username = user_info['screen_name']
-    user = AuthenticatedUser.get_or_insert(key_name = username,
-                                           username = username,
-                                           access_token = access_token,
+    user = AuthenticatedUser.get_or_insert(key_name      = username,
+                                           username      = username,
+                                           access_token  = access_token,
                                            access_secret = access_secret)
     request.session['user_key'] = user.key()
     return HttpResponseRedirect(reverse(home))
