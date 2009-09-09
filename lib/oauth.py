@@ -91,8 +91,7 @@ class OauthRequestToken(db.Model):
   created = db.DateTimeProperty(auto_now_add=True)
 
 class OAuthClient():
-  def __init__(self, service_name, consumer_key, consumer_secret, request_url,
-               access_url, callback_url=None):
+  def __init__(self, service_name, consumer_key, consumer_secret, request_url, access_url):
     """ Constructor."""
 
     self.service_name = service_name
@@ -100,7 +99,6 @@ class OAuthClient():
     self.consumer_secret = consumer_secret
     self.request_url = request_url
     self.access_url = access_url
-    self.callback_url = callback_url
 
   def make_request(self, path, token="", secret="", additional_params=None,
                    protected=False):
@@ -127,8 +125,6 @@ class OAuthClient():
 
     if token:
       params["oauth_token"] = token
-    elif self.callback_url:
-      params["oauth_callback"] = self.callback_url
 
     if additional_params:
       params.update(additional_params)
@@ -156,7 +152,7 @@ class OAuthClient():
 
     return urlfetch.fetch(url, headers=headers)
 
-  def get_authorization_url(self):
+  def get_authorization_url(self, callback_url):
     """Get Authorization URL.
 
     Returns a service specific URL which contains an auth token. The user
@@ -205,7 +201,7 @@ class OAuthClient():
   def fetch_with_access_token(self, resource_url, access_token, access_secret):
     return self.make_request(resource_url, token=access_token, secret=access_secret, protected=True)
 
-  def _get_request_token(self):
+  def _get_request_token(self, callback_url):
     """Get Request Token.
 
     Actually gets the request token and secret from the service. The
@@ -213,7 +209,8 @@ class OAuthClient():
     returned.
     """
 
-    response = self.make_request(self.request_url)
+    response = self.make_request(self.request_url,
+        additional_params={"oauth_callback": callback_url})
     request = self._extract_credentials(response)
     request_token, request_secret = request["token"], request["secret"]
 
@@ -267,7 +264,7 @@ class TwitterClient(OAuthClient):
   authentication model.
   """
 
-  def __init__(self, consumer_key, consumer_secret, callback_url):
+  def __init__(self, consumer_key, consumer_secret):
     """Constructor."""
     self._url_prefix = "http://twitter.com"
 
@@ -276,9 +273,9 @@ class TwitterClient(OAuthClient):
         consumer_key,
         consumer_secret,
         "/oauth/request_token",
-        "/oauth/access_token",
-        callback_url)
+        "/oauth/access_token")
 
-  def get_authorization_url(self):
+  def get_authorization_url(self, callback_url):
     """Get Authorization URL."""
-    return "%s/oauth/authorize?oauth_token=%s" % (self._url_prefix, self._get_request_token())
+    return "%s/oauth/authorize?oauth_token=%s" % (self._url_prefix,
+        self._get_request_token(callback_url))

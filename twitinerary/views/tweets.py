@@ -56,9 +56,7 @@ def delete(request):
   return HttpResponseRedirect(reverse(view))
 
 def oauth(request):
-  client = oa.TwitterClient(settings.OAUTH_CONSUMER_KEY,
-                            settings.OAUTH_CONSUMER_SECRET,
-                            request.build_absolute_uri())
+  client = oa.TwitterClient(settings.OAUTH_CONSUMER_KEY, settings.OAUTH_CONSUMER_SECRET)
 
   if ('oauth_token' in request.GET) and ('oauth_verifier' in request.GET):
     request_token = request.GET.get('oauth_token')
@@ -76,4 +74,4 @@ def oauth(request):
     request.session['user_key'] = user.key()
     return HttpResponseRedirect(reverse(home))
   else:
-    return HttpResponseRedirect(client.get_authorization_url())
+    return HttpResponseRedirect( client.get_authorization_url(request.build_absolute_uri()) )
