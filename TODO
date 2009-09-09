@@ -8,7 +8,6 @@ Get Satisfaction support
 
 OAuth:
   Add error detection/handling
-  Move get_authorization_url() into base class
 Design:
   Finish all prose, other writing for app so that Alex may design to it
   Determine new name for application

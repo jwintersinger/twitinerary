@@ -101,12 +101,13 @@ class OauthRequestToken(db.Model):
 
 class OAuthClient():
   def __init__(self, service_name, consumer_key, consumer_secret,
-               request_url, access_url, user_agent=""):
+               authorization_url, request_url, access_url, user_agent=""):
     """ Constructor."""
 
     self.service_name = service_name
     self.consumer_key = consumer_key
     self.consumer_secret = consumer_secret
+    self._authorization_url = authorization_url
     self.request_url = request_url
     self.access_url = access_url
     self._user_agent = user_agent
@@ -299,6 +300,11 @@ class OAuthClient():
       "secret": secret
     }
 
+  def get_authorization_url(self, callback_url):
+    #return "%s/oauth/authorize?oauth_token=%s" % (self._url_prefix,
+        #self._get_request_token(callback_url))
+    return "%s%s?oauth_token=%s" % (self._url_prefix, self._authorization_url, self._get_request_token(callback_url))
+
 
 class TwitterClient(OAuthClient):
   """Twitter Client.
@@ -316,11 +322,7 @@ class TwitterClient(OAuthClient):
         "twitter",
         consumer_key,
         consumer_secret,
+        "/oauth/authorize",
         "/oauth/request_token",
         "/oauth/access_token",
         user_agent)
-
-  def get_authorization_url(self, callback_url):
-    """Get Authorization URL."""
-    return "%s/oauth/authorize?oauth_token=%s" % (self._url_prefix,
-        self._get_request_token(callback_url))
