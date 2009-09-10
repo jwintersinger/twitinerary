@@ -4,6 +4,7 @@ Short term
 Add login_required decorator to appropriate views
 Integrate URL shortener, image uploader
 Get Satisfaction support
+Notify user of how many Tweets is too many when refused for excessive activity
 
 OAuth:
   Add error detection/handling
