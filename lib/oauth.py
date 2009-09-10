@@ -198,14 +198,6 @@ class OAuthClient():
 
   def _make_request(self, path, method='GET', payload={},
                    additional_oauth={}, token="", secret=""):
-    """Make Request.
-
-    Make an authenticated request to any OAuth protected resource. At present
-    only GET requests are supported.
-
-    A urlfetch response object is returned.
-    """
-
     url = "%s%s" % (self._url_prefix, path)
     method = method.upper()
     oauth_params = self._configure_oauth_params(token, additional_oauth)
@@ -217,8 +209,18 @@ class OAuthClient():
       encoded_payload = urlencode(payload)
     elif payload:
       url = "%s?%s" % (url, urlencode(payload))
-    return urlfetch.fetch(url, payload=encoded_payload,
+
+    request = lambda: urlfetch.fetch(url, payload=encoded_payload,
       method=self._request_method_name_to_constant(method), headers=headers)
+    try:
+      response = request()
+      if response.status_code != 200: # Retry once if request unsuccessful.
+        logging.error('urlfetch attempt returned HTTP status code indicating failure.')
+        response = request()
+    except urlfetch.DownloadError:
+      logging.error('urlfetch attempt raised DownloadError.')
+      response = request() # Retry once if DownloadError raised.
+    return response
     
   def _retrieve_request_secret(self, request_token):
     request_secret = memcache.get(self._get_memcache_request_token_key(request_token))
