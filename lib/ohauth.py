@@ -149,7 +149,7 @@ class OauthRequestToken(db.Model):
   created = db.DateTimeProperty(auto_now_add=True)
 
 
-class OAuthClient():
+class OhAuthClient():
   def __init__(self, service_name, consumer_key, consumer_secret,
                authorization_url, request_url, access_url, user_agent=""):
     self.service_name = service_name
@@ -368,7 +368,7 @@ class OAuthClient():
     }
 
 
-class TwitterClient(OAuthClient):
+class TwitterClient(OhAuthClient):
   """Twitter client.
 
   A client for talking to the Twitter API using OAuth as the authentication
@@ -380,7 +380,7 @@ class TwitterClient(OAuthClient):
     self._url_prefix = "http://twitter.com"
     self._use_auth_header = True
 
-    OAuthClient.__init__(self,
+    OhAuthClient.__init__(self,
         "twitter",
         consumer_key,
         consumer_secret,

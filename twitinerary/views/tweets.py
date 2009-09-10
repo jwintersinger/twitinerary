@@ -6,7 +6,7 @@ from django.utils import simplejson as json
 from django.views.generic.simple import direct_to_template
 from google.appengine.ext.db import BadKeyError
 from twitinerary.models import ScheduledTweet, Twitterer, AuthenticatedUser
-from lib import oauth as oa
+from lib import ohauth
 
 def home(request):
   tweets = ScheduledTweet.all()
@@ -56,7 +56,7 @@ def delete(request):
   return HttpResponseRedirect(reverse(view))
 
 def oauth(request):
-  client = oa.TwitterClient(settings.OAUTH_CONSUMER_KEY,
+  client = ohauth.TwitterClient(settings.OAUTH_CONSUMER_KEY,
                             settings.OAUTH_CONSUMER_SECRET,
                             settings.USER_AGENT)
 
