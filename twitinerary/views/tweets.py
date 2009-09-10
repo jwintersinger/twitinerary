@@ -41,7 +41,7 @@ def view(request):
     return HttpResponse('Not authenticated.', status=401, content_type='text/plain')
   tweets = ScheduledTweet.all()
   # TODO: require login.
-  tweets.filter('username =', request.user.username)
+  tweets.filter('user =', request.user)
   tweets.filter('tweeted =', False)
   tweets.order('-post_at')
   return direct_to_template(request, 'view.html', {'tweets': tweets})
@@ -51,7 +51,7 @@ def delete(request):
     tweet = ScheduledTweet.get(request.POST.get('key'))
   except BadKeyError:
     tweet = None
-  if request.method == 'POST' and tweet and tweet.username == request.user.username:
+  if request.method == 'POST' and tweet and tweet.user == request.user:
     tweet.delete()
   return HttpResponseRedirect(reverse(view))
 

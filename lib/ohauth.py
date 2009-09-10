@@ -9,7 +9,9 @@ third parties. It is based on AppEngine-OAuth-Library by Mike Knapp.
 ========
 1. Usage
 ========
-A typical OhAuth use case inside an AppEngine controller is:
+Following is a typical OhAuth use case inside a Django view on App Engine. The
+example can easily be adapted for use with other Python frameworks on App
+Engine, including Google's webapp framework.
 
 1. Create the OhAuth client. In this case we'll use the Twitter client,
    but you can write other clients to connect to different services.
