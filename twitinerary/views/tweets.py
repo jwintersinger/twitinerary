@@ -19,7 +19,7 @@ def home(request):
 
 def _too_many_tweets_sent(user):
   tweets = ScheduledTweet.all()
-  tweets.filter('username =', user.username)
+  tweets.filter('user =', user)
   return tweets.count() >= 5
 
 def new(request):

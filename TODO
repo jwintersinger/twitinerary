@@ -1,7 +1,6 @@
 ==========
 Short term
 ==========
-Consolidate cron URLs in app.yaml
 Add login_required decorator to appropriate views
 Integrate URL shortener, image uploader
 Get Satisfaction support
