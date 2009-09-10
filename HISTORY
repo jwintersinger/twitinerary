@@ -1,0 +1,3 @@
+v1: initial version.
+v2: ported code from Google's webapp framework to Django app-engine-patch.
+v3: migrated from username/password authentication to OAuth.
