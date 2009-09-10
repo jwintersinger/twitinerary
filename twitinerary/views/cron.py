@@ -8,9 +8,10 @@ def batch_tweet(request):
   tweets = ScheduledTweet.all()
   tweets.filter('post_at  <=', datetime.utcnow())
   tweets.filter('tweeted =', False)
+  twitterer = Twitterer()
   for tweet in tweets:
     # TODO: add e-mail notification (or some other handling) if tweet fails
-    if Twitterer(AuthenticatedUser(tweet.username, tweet.password)).tweet(tweet):
+    if twitterer.tweet(tweet):
       tweet.tweeted = True
       tweet.put()
   return HttpResponse()

@@ -1,28 +1,18 @@
 import base64
+from django.conf import settings
 from google.appengine.ext import db
 from google.appengine.api import urlfetch
+from lib import ohauth
 from urllib import urlencode
 
 class Twitterer:
-  def __init__(self, user):
-    self.__user     = user
-    self.__base_url = 'http://twitter.com'
-
   def tweet(self, tweet):
-    response = self.__fetch('/statuses/update.json', {'status': tweet.tweet},
-                            additional_headers = {'X-Originating-IP': tweet.ip_address})
-    # TODO: report error given in response.content, if it occurred
+    client = ohauth.TwitterClient(settings.OAUTH_CONSUMER_KEY,
+      settings.OAUTH_CONSUMER_SECRET, settings.USER_AGENT)
+    response = client.fetch('/statuses/update.json', method='POST',
+      payload={'status': tweet.tweet}, access_token=tweet.user.access_token,
+      access_secret=tweet.user.access_secret)
     return response.status_code == 200
-
-  def verify_credentials(self):
-    response = self.__fetch('/account/verify_credentials.json', method=urlfetch.GET)
-    return response.status_code == 200
-
-  def __fetch(self, url, params = {}, method = urlfetch.POST, additional_headers = {}):
-    auth = 'Basic ' + base64.standard_b64encode('%s:%s' % (self.__user.username, self.__user.password))
-    headers = {'Authorization': auth, 'User-Agent': 'Twitinerary'}
-    headers.update(additional_headers)
-    return urlfetch.fetch(self.__base_url + url, urlencode(params), method = method, headers = headers)
 
 class AuthenticatedUser(db.Model):
   username      = db.StringProperty(required=True)
