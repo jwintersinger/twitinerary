@@ -286,8 +286,8 @@ class OhAuthClient():
       method=self._request_method_name_to_constant(method), headers=headers)
     try:
       response = request()
-      if response.status_code != 200: # Retry once if request unsuccessful.
-        logging.error('urlfetch attempt returned HTTP status code indicating failure.')
+      if response.status_code == 503: # Retry once if status is "Service Unavailable".
+        logging.error('urlfetch attempt returned HTTP 503 Service Unavailable.')
         response = request()
     except urlfetch.DownloadError:
       logging.error('urlfetch attempt raised DownloadError.')
