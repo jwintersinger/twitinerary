@@ -1,41 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
-  <form id="new-tweet" action="{% url twitinerary.views.tweets.new %}" method="post">
+  {% if not request.user.is_authenticated %}
     <ol>
-    {% if not request.user.is_authenticated %}
       <li><a href="{% url twitinerary.views.tweets.oauth %}">Authenticate with Twitter</a>.</li>
-    {% endif %}
-
-      <li>
-        <p>Enter your Tweet.</p>
-        <textarea name="tweet" cols="40" rows="2">Tweet.</textarea>
-      </li>
-
-      <li>
-        <p>When do you want it posted?</p>
-        <p>
-          <select name="date">
-          {% for day in days %}
-            <option value="{{ day|date:"Ymd" }}">{{ day }}</option>
-          {% endfor %}
-          </select>
-          at
-          <input name="hour" type="text" value="8" size="2" />:<input name="minute" type="text" value="00" size="2">
-          <select name="period">
-            <option value="am">a.m.</option>
-            <option value="pm">p.m.</option>
-          </select>
-          {# post_at calculated dynamically via Javascript prior to form submission. #}
-          <input name="post_at" type="hidden" />
-        </p>
-      </li>
     </ol>
-    <p><input type="submit" value="Schedule it!" /></p>
-  </form>
+  {% else %}
+    <form id="new-tweet" action="{% url twitinerary.views.tweets.new %}" method="post">
+      <ol>
+        <li>
+          <p>Enter your Tweet.</p>
+          <textarea name="tweet" cols="40" rows="2">Tweet.</textarea>
+        </li>
+
+        <li>
+          <p>When do you want it posted?</p>
+          <p>
+            <select name="date">
+            {% for day in days %}
+              <option value="{{ day|date:"Ymd" }}">{{ day }}</option>
+            {% endfor %}
+            </select>
+            at
+            <input name="hour" type="text" value="8" size="2" />:<input name="minute"
+              type="text" value="00" size="2">
+            <select name="period">
+              <option value="am">a.m.</option>
+              <option value="pm">p.m.</option>
+            </select>
+            {# post_at calculated dynamically via Javascript prior to form submission. #}
+            <input name="post_at" type="hidden" />
+          </p>
+        </li>
+      </ol>
+      <p><input type="submit" value="Schedule it!" /></p>
+    </form>
+  {% endif %}
 
   <ul>
   {% for tweet in tweets %}
-    <li>[{{ tweet.username }}] [{{ tweet.post_at }}] {{ tweet.tweet }}</li>
+    <li>[{{ tweet.user.username }}] [{{ tweet.post_at }}] {{ tweet.tweet }}</li>
   {% endfor %}
   </ul>
 {% endblock %}
