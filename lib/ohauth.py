@@ -46,10 +46,13 @@ Engine, including Google's webapp framework.
    request_token = request.GET.get('oauth_token')
    verifier = request.GET.get('oauth_verifier')
    access_token, access_secret = client.get_access_token(request_token, verifier)
-   # Store access_token and access_secret as you please. Subsequently:
 
-   response = client.fetch('/account/verify_credentials.json', access_token=access_token,
-                           access_secret=access_secret)
+   # Store access_token and access_secret as you please, such as in Memcache or
+   # the datastore. Then, in a later request, to Tweet:
+
+   # Omitted: retrieve access_token and access_secret from storage, set up client as above
+   response = client.fetch('/statuses/update.json', method='POST',
+     payload={'status': 'Hello, world!'}, access_token=access_token, access_secret=access_secret)
 
 Note that OhAuth adds a new model to your datastore to store Request Tokens,
 and also makes use of Memcache.
@@ -164,7 +167,10 @@ class OhAuthClient():
     self._realm = self._url_prefix
 
   def get_authorization_url(self, callback_url):
-    """Returns the URL to which the User must be directed to get his Request Token authorized."""
+    """Returns the URL to which the User must be directed to get his Request Token authorized.
+    
+    Must pass the callback_url to which the User will be redirected after
+    authorizing his Request Token."""
     return "%s%s?oauth_token=%s" % (self._url_prefix, self._authorization_url,
                                     self._get_request_token(callback_url))
 
@@ -192,7 +198,11 @@ class OhAuthClient():
     
     One Must supply either a request_token and verifier, or an access_token and
     access_secret. In the former case, the request_token is exchanged for an
-    acecss_token before making the request."""
+    acecss_token before making the request.
+
+    method can be GET, POST, HEAD, PUT, or DELETE. payload is the body content
+    for a POST or PUT request.
+    """
     if request_token and verifier:
       access_token, access_secret = self.get_access_token(request_token, verifier)
     elif not (access_token and access_secret):
