@@ -12,9 +12,10 @@ Tweeter.prototype.__set_tweet_post_at = function() {
 
 Tweeter.prototype.__calculate_tweet_post_at = function() {
   var hour = this.__convert_24_based_hour_to_12_based_hour(
-      parseInt(this.__new_tweet_form.find('[name=hour]').val(), 10),
-      this.__new_tweet_form.find('[name=period]').val() );
+    parseInt(this.__new_tweet_form.find('[name=hour]').val(), 10),
+    this.__new_tweet_form.find('[name=period]').val() );
   var minute = parseInt(this.__new_tweet_form.find('[name=minute]').val(), 10);
+  if(minute < 0 || minute > 59) minute = 0;
   var date = this.__parse_date(this.__new_tweet_form.find('[name=date]').val());
   return new Date(date[0],     // Year.
                   date[1] - 1, // Month -- oddly, 0-based.
@@ -34,6 +35,7 @@ Tweeter.prototype.__parse_date = function(date_str) {
 Tweeter.prototype.__convert_24_based_hour_to_12_based_hour = function(hour, period) {
   if(period == 'pm' && hour < 12)  hour += 12;
   if(period == 'am' && hour == 12) hour = 0;
+  if(hour < 0 || hour > 23) hour = 0;
   return hour;
 }
 
