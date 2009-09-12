@@ -1,7 +1,8 @@
-function UrlShortener(form, url_input_selector, tweet_input) {
+function UrlShortener(form, url_input_selector, tweet_input, notifier) {
   this.__form = form;
   this.__url_input = this.__form.find(url_input_selector);
   this.__tweet_input = tweet_input;
+  this.__notifier = notifier;
   this.__configure_clear_on_activation();
   this.__configure_form_submission();
 }
@@ -29,6 +30,10 @@ UrlShortener.prototype.__configure_form_submission = function() {
   this.__form.submit(function() {
     var long_url = self.__url_input.val();
     var callback = function (data) {
+      if(err = data.results[long_url].errorMessage) {
+        self.__notifier.notify_failure('Error shortening URL: ' + err);
+        return;
+      }
       var short_url = data.results[long_url].shortUrl;
       self.__url_input.val(self.__default_url_input_value);
       self.__tweet_input.insertAtCaret(short_url);
