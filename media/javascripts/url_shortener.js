@@ -30,10 +30,16 @@ UrlShortener.prototype.__configure_form_submission = function() {
   this.__form.submit(function() {
     var long_url = self.__url_input.val();
     var callback = function (data) {
-      if(err = data.results[long_url].errorMessage) {
+      // data.errorMessage will be set if a global error occurred, such as no
+      // URL provided (empty input box). Otherwise, error message will be
+      // provided in the results array, for it will be specific to the
+      // given URL.
+      // TODO: more informative error message when blank URL provided?
+      if(err = (data.errorMessage || data.results[long_url].errorMessage)) {
         self.__notifier.notify_failure('Error shortening URL: ' + err);
         return;
       }
+
       var short_url = data.results[long_url].shortUrl;
       self.__url_input.val(self.__default_url_input_value);
       self.__tweet_input.insertAtCaret(short_url);
