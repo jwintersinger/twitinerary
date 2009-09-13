@@ -2,7 +2,7 @@
 {% block content %}
   {% if not request.user.is_authenticated %}
     <ol>
-      <li><a href="{% url twitinerary.views.tweets.oauth %}">Authenticate with Twitter</a>.</li>
+      <li><a href="{% url twitinerary.views.oauth.authenticate}">Authenticate with Twitter</a>.</li>
     </ol>
   {% else %}
     <form id="new-tweet" action="{% url twitinerary.views.tweets.new %}" method="post">
