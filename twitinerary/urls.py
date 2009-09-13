@@ -9,4 +9,5 @@ urlpatterns = patterns('twitinerary.views',
   url(r'^cron/batch_send/$',     'cron.batch_tweet'),
   url(r'^cron/batch_delete/$',   'cron.batch_delete'),
   url(r'^logout/$',              'user.logout'),
+  url(r'^upload_image/$',        'image_uploader.upload_image'),
 )

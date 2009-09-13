@@ -36,7 +36,16 @@
     </form>
 
     <form id="url-shortener">
-      <input type="text" name="long_url" value="URL to shorten ..." /><input type="submit" value="Shorten URL" />
+      <input name="long_url" type="text" value="URL to shorten ..." /><input type="submit"
+      value="Shorten URL" />
+    </form>
+
+    <iframe id="image-uploader-dest" name="image-uploader-dest" style="display: none"></iframe>
+    <form id="image-uploader" action="/upload_image/"
+      method="post" enctype="multipart/form-data" target="image-uploader-dest">
+      <input name="username" value="ienjoytesting" /> <input name="password" value="happypants" />
+      <input name="media" type="file" name="media" />
+      <input type="submit" value="Upload image" />
     </form>
   {% endif %}
 
