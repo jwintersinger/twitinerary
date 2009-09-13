@@ -17,6 +17,7 @@ ImageUploader.prototype.__configure_destination_onload = function() {
         return;
       }
       self.__tweet_input.insertAtCaret(response.find('mediaurl').text());
+      self.__tweet_input.focus();
     };
     self.__destination.unbind().load(callback);
     return true;

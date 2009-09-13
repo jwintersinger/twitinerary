@@ -2,11 +2,11 @@
 Short term
 ==========
 Add login_required decorator to appropriate views
-Integrate URL shortener, image uploader
 Get Satisfaction support
 Notify user of how many Tweets is too many when refused for excessive activity
 
-Insert shortened URL at cursor instead of appending
+Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
+Change date list to "today, tomorrow, another day"
 
 OAuth:
   Add error detection/handling
