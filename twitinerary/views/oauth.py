@@ -1,5 +1,9 @@
-from django.http import HttpResponseRedirect
+from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.utils import simplejson as json
+from lib import ohauth
+from twitinerary.models import AuthenticatedUser
 
 def sign_out(request):
   if 'user_key' in request.session:
@@ -25,6 +29,6 @@ def authenticate(request):
                                            access_token  = access_token,
                                            access_secret = access_secret)
     request.session['user_key'] = user.key()
-    return HttpResponseRedirect(reverse(home))
+    return HttpResponseRedirect(reverse('twitinerary.views.tweets.home'))
   else:
     return HttpResponseRedirect( client.get_authorization_url(request.build_absolute_uri()) )

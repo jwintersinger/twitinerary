@@ -1,12 +1,9 @@
 from datetime import date, datetime, timedelta
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.utils import simplejson as json
 from django.views.generic.simple import direct_to_template
 from google.appengine.ext.db import BadKeyError
-from twitinerary.models import ScheduledTweet, Twitterer, AuthenticatedUser
-from lib import ohauth
+from twitinerary.models import ScheduledTweet, Twitterer
 
 def home(request):
   tweets = ScheduledTweet.all()

@@ -2,7 +2,7 @@
 {% block content %}
   {% if not request.user.is_authenticated %}
     <ol>
-      <li><a href="{% url twitinerary.views.oauth.authenticate}">Authenticate with Twitter</a>.</li>
+      <li><a href="{% url twitinerary.views.oauth.authenticate %}">Authenticate with Twitter</a>.</li>
     </ol>
   {% else %}
     <form id="new-tweet" action="{% url twitinerary.views.tweets.new %}" method="post">
@@ -41,7 +41,7 @@
     </form>
 
     <iframe id="image-uploader-dest" name="image-uploader-dest" style="display: none"></iframe>
-    <form id="image-uploader" action="/upload_image/"
+    <form id="image-uploader" action="{% url twitinerary.views.image_uploader.upload_image %}"
       method="post" enctype="multipart/form-data" target="image-uploader-dest">
       <input name="username" value="ienjoytesting" /> <input name="password" value="happypants" />
       <input name="media" type="file" name="media" />
