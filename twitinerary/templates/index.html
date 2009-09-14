@@ -35,18 +35,24 @@
       <p><input type="submit" value="Schedule it!" /></p>
     </form>
 
-    <form id="url-shortener">
-      <input name="long_url" type="text" value="URL to shorten ..." /><input type="submit"
-      value="Shorten URL" />
-    </form>
+    <div id="url-shortener-container">
+      <input id="url-shortener-activator" type="button" value="Shorten URL" />
+      <form id="url-shortener" style="display: none">
+        <input name="long_url" type="text" value="URL to shorten ..." /><input type="submit"
+        value="Shorten URL" />
+      </form>
+    </div>
 
-    <iframe id="image-uploader-dest" name="image-uploader-dest" style="display: none"></iframe>
-    <form id="image-uploader" action="{% url twitinerary.views.image_uploader.upload_image %}"
-      method="post" enctype="multipart/form-data" target="image-uploader-dest">
-      <input name="username" value="ienjoytesting" /> <input name="password" value="happypants" />
-      <input name="media" type="file" name="media" />
-      <input type="submit" value="Upload image" />
-    </form>
+    <div id="image-uploader-container">
+      <input id="image-uploader-activator" type="button" value="Upload image" />
+      <iframe id="image-uploader-dest" name="image-uploader-dest" style="display: none"></iframe>
+      <form id="image-uploader" action="{% url twitinerary.views.image_uploader.upload_image %}"
+        method="post" enctype="multipart/form-data" target="image-uploader-dest" style="display: none">
+        <input name="username" value="ienjoytesting" /> <input name="password" value="happypants" />
+        <input name="media" type="file" name="media" />
+        <input type="submit" value="Upload image" />
+      </form>
+    </div>
   {% endif %}
 
   <ul>
