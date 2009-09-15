@@ -4,7 +4,7 @@ function ImageUploader(tweet_input, notifier) {
   this.__activator = $('#image-uploader-activator');
   this.__password_form = $('#twitter-password');
   this.__tweet_input = $(tweet_input);
-  this.__notifier = $(notifier);
+  this.__notifier = notifier;
   this.__stored_password_cookie = 'twitter_password_stored';
 
   this.__configure_password_form_submit();
