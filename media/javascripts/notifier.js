@@ -1,5 +1,5 @@
 function Notifier(container) {
-  this.__container = container;
+  this.__container = $(container);
   this.__slide_speed = 'normal';
   this.__dismisser = $('#dismiss-notification');
   var self = this;

@@ -53,6 +53,8 @@ def upload_image(request):
 # my implementation will not handle multiple files in the same request. For
 # further details (such as the boundary format), see one of the MIME RFCs:
 # http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
+#
+# Note that there is an example implementation in django.test.client.encode_multipart.
 def _encode_to_multipart_form_data(data):
   # Taken from django.test.client -- imperfect, but good enough.
   is_file = lambda thing: hasattr(thing, "read") and callable(thing.read)

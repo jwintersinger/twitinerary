@@ -1,6 +1,6 @@
 function Tweeter(new_tweet_form, notifier) {
-  this.__new_tweet_form = new_tweet_form;
-  this.__notifier = notifier;
+  this.__new_tweet_form = $(new_tweet_form);
+  this.__notifier = $(notifier);
   var self = this;
   this.__new_tweet_form.submit(function() { return self.__on_new_tweet_submission(); });
 }
