@@ -26,6 +26,7 @@ class AuthenticatedUser(db.Model):
 class UnauthenticatedUser():
   def __init__(self):
     self.username = 'Unauthenticated'
+    self.password = None
 
   def is_authenticated(self):
     return False

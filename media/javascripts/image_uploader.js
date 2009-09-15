@@ -5,8 +5,8 @@ function ImageUploader(form, destination, activator, password_form, tweet_input,
   this.__password_form = password_form;
   this.__tweet_input = tweet_input;
   this.__notifier = notifier;
+  this.__stored_password_cookie = 'twitter_password_stored';
 
-  this.__configure_stored_password();
   this.__configure_password_form_submit();
   this.__configure_image_uploaded();
   this.__configure_activation();
@@ -39,7 +39,7 @@ ImageUploader.prototype.__configure_image_uploaded = function() {
 ImageUploader.prototype.__handle_upload_error = function(error) {
   if(error.length == 0) return false;
   // Error 1001 == invalid username or password.
-  if(error.attr('code') == '1001') this.__password_stored = false;
+  if(error.attr('code') == '1001') this.__clear_stored_password();
   this.__notifier.notify_failure('Image upload failed: ' + error.attr('msg'));
   return true;
 }
@@ -48,27 +48,33 @@ ImageUploader.prototype.__configure_activation = function() {
   var self = this;
   this.__activator.click(function() {
     self.__activator.hide();
-    if(self.__password_stored) self.__form.show();
+    if(self.__is_password_stored()) self.__form.show();
     else                       self.__password_form.show();
   });
 }
 
-ImageUploader.prototype.__configure_stored_password = function() {
-  this.__store_password();
-  this.__password_stored = ($('#twitter-password-stored').length > 0);
-}
-
 ImageUploader.prototype.__store_password = function() {
   this.__password = this.__password_form.find('[name=password]').val();
+  // The same cookie is set in views.tweets.home, so remember to change its
+  // value and name there if you do so here.
+  $.cookie(this.__stored_password_cookie, 'true', {expires: 365});
 }
 
 ImageUploader.prototype.__configure_password_form_submit = function() {
   var self = this;
   this.__password_form.submit(function() {
     self.__store_password();
-    self.__password_stored = true;
     self.__password_form.hide();
     self.__form.show();
     return false;
   });
+}
+
+ImageUploader.prototype.__is_password_stored = function() {
+  return $.cookie(this.__stored_password_cookie) != null;
+}
+
+ImageUploader.prototype.__clear_stored_password = function() {
+  this.__password = null;
+  $.cookie(this.__stored_password_cookie, null); // Delete cookie.
 }

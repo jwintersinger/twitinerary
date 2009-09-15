@@ -1,7 +1,7 @@
 // See:
 //   * http://stackoverflow.com/questions/946534/insert-text-into-textarea-with-jquery
 //   * http://laboratorium.0xab.cd/jquery/fieldselection/0.1.0/jquery-fieldselection.js
-$.fn.extend({
+jQuery.fn.extend({
   insertAtCaret: function(str) {
     var self = this[0];
 

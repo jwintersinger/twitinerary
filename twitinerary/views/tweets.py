@@ -8,16 +8,23 @@ from twitinerary.models import ScheduledTweet, Twitterer
 def home(request):
   tweets = ScheduledTweet.all()
   tweets.order('-post_at')
-
   today = date.today()
   days = [today + timedelta(days=n) for n in range(4)]
 
-  return direct_to_template(request, 'index.html', {'tweets': tweets, 'days': days})
+  response = direct_to_template(request, 'index.html', {'tweets': tweets, 'days': days})
+  _indicate_twitter_password_stored(request.user, response)
+  return response
 
-def _too_many_tweets_sent(user):
-  tweets = ScheduledTweet.all()
-  tweets.filter('user =', user)
-  return tweets.count() >= 5
+def _indicate_twitter_password_stored(user, response):
+  if user.password:
+    # The same cookie is used by image_uploader.js, so remember to change its name
+    # and value there if you do so here, and vice versa. Don't worry about
+    # deleting it or setting it for beyond the browsing session -- both tasks are
+    # handled in Javascript. This is only to prevent the user from being prompted
+    # for his password in the event that his password is stored in the datastore,
+    # but the cookie indicating such has not been set by prior execution of the
+    # associated Javascript.
+    response.set_cookie('twitter_password_stored', 'true')
 
 def new(request):
   user = request.user
@@ -32,6 +39,11 @@ def new(request):
                          ip_address = request.META.get('REMOTE_ADDR') )
   tweet.put()
   return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
+
+def _too_many_tweets_sent(user):
+  tweets = ScheduledTweet.all()
+  tweets.filter('user =', user)
+  return tweets.count() >= 5
 
 def view(request):
   if not request.user.is_authenticated():
