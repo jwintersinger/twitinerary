@@ -33,6 +33,26 @@ def upload_image(request):
   return HttpResponse(response.content, status=response.status_code,
       content_type=response.headers.get('content-type', 'application/xml'))
 
+# Initially I planned to let the browser do all the encoding work -- I'd set a
+# dummy password as a hidden value on the form, then update that password to
+# a user-supplied value if any such value was provided. Then, I could simply
+# search and replace within request.raw_post_data, replacing the dummy password
+# with the user's password stored in the datastore if the dummy password
+# was still present (i.e., no password had been entered by the user). However,
+# Django unfortunately does not allow access to both request.raw_post_data
+# (needed for the encoded submission) and request.POST (needed to get any
+# password entered by the user so that it could be stored in the datastore)
+# in the same request -- see http://code.djangoproject.com/ticket/9054. This
+# difficulty, combined with the ugly nature of the hack I had planned, led me to
+# pursue a more robust technique in which I re-encoded the data myself. Writing
+# my own multipart/form-data encoder was not as difficult as I expected,
+# especially given that I can simply pass along the same content type provided
+# for the uploaded file by the browser.
+#
+# According to the spec (http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2),
+# my implementation will not handle multiple files in the same request. For
+# further details (such as the boundary format), see one of the MIME RFCs:
+# http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
 def _encode_to_multipart_form_data(data):
   # Taken from django.test.client -- imperfect, but good enough.
   is_file = lambda thing: hasattr(thing, "read") and callable(thing.read)
