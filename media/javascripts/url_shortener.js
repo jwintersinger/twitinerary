@@ -1,11 +1,11 @@
-function UrlShortener(form, url_input_selector, toggler, tweet_input, notifier) {
+function UrlShortener(form, url_input_selector, activator, tweet_input, notifier) {
   this.__form = form;
   this.__url_input = this.__form.find(url_input_selector);
-  this.__toggler = toggler;
+  this.__activator = activator;
   this.__tweet_input = tweet_input;
   this.__notifier = notifier;
 
-  this.__configure_form_toggle();
+  this.__configure_activation();
   this.__configure_clear_on_activation();
   this.__configure_form_submission();
 }
@@ -20,9 +20,9 @@ UrlShortener.prototype.__make_api_options = function(long_url) {
   };
 }
 
-UrlShortener.prototype.__configure_form_toggle = function() {
+UrlShortener.prototype.__configure_activation = function() {
   var self = this;
-  this.__toggler.click(function() {
+  this.__activator.click(function() {
     $(this).hide();
     self.__form.show();
   });
@@ -54,7 +54,7 @@ UrlShortener.prototype.__configure_form_submission = function() {
       var short_url = data.results[long_url].shortUrl;
       self.__url_input.val(self.__default_url_input_value);
       self.__form.hide();
-      self.__toggler.show();
+      self.__activator.show();
       self.__tweet_input.insertAtCaret(short_url);
       self.__tweet_input.focus();
     };

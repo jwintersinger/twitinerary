@@ -8,6 +8,7 @@ Notify user of how many Tweets is too many when refused for excessive activity
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
 Change date list to "today, tomorrow, another day"
   Fix date handling -- list of days displayed is according to server's timezone, so if client is behind, he won't see his day
+Hardcode selectors in Javascript classes
 
 Review Tweets:
   Make URLs clickable

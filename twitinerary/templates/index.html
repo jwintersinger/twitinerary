@@ -44,11 +44,21 @@
     </div>
 
     <div id="image-uploader-container">
+    {% if request.user.password %}
+      <div class="option" id="twitter-password-stored"></div>
+    {% endif %}
       <input id="image-uploader-activator" type="button" value="Upload image" />
       <iframe id="image-uploader-dest" name="image-uploader-dest" style="display: none"></iframe>
+
+      <form id="twitter-password" style="display: none">
+        <input name="password" type="password" />
+        <input type="submit" value="Sign in" />
+      </form>
+
       <form id="image-uploader" action="{% url twitinerary.views.image_uploader.upload_image %}"
         method="post" enctype="multipart/form-data" target="image-uploader-dest" style="display: none">
-        <input name="username" value="ienjoytesting" /> <input name="password" value="happypants" />
+        <input name="username" type="hidden" value="{{ request.user.username }}" />
+        <input name="password" type="hidden" value="" />
         <input name="media" type="file" name="media" />
         <input type="submit" value="Upload image" />
       </form>

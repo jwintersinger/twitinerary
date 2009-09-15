@@ -16,6 +16,7 @@ class Twitterer:
 
 class AuthenticatedUser(db.Model):
   username      = db.StringProperty(required=True)
+  password      = db.StringProperty()
   access_token  = db.StringProperty()
   access_secret = db.StringProperty()
 
