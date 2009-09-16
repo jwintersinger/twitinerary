@@ -2,43 +2,22 @@ function Tweeter(new_tweet_form, notifier) {
   this.__new_tweet_form = $(new_tweet_form);
   this.__notifier = notifier;
 
-  this.__update_date('today');
-  this.__update_time();
-  this.__configure_date_picker_onclick();
+  this.__configure_date_picker_calendar();
+  this.__configure_day_chooser_onclick();
 
   var self = this;
   this.__new_tweet_form.submit(function() { return self.__on_new_tweet_submission(); });
 }
 
-// Day should be in ['today', 'tomorrow', 'another_day'].
-Tweeter.prototype.__update_date = function(day) {
-  var self = this;
-  var set_today = function() {
-    self.__post_at = new Date();
-    // Just setting day and not time, so we want each time component to be 0.
-    $.each(['Hours', 'Minutes', 'Seconds', 'Milliseconds'], function() {
-      self.__post_at['set' + this](0);
-    });
-  };
-  set_today();
-
-  switch(day) {
-    case 'today':
-      break;
-    case 'tomorrow':
-      set_today();
-      // Add 24 hours as opposed to 1 day, as this seems clearer -- adding a day
-      // might result in non-existent days such as Sep. 31, but adding 24 hours
-      // seems conceptually clearer. It likely doesn't matter.
-      this.__post_at.setHours(self.__post_at.getHours() + 24);
-      break;
-    case 'another_day':
-      this.__post_at.setYear(1337);
-      break;
-  }
-
-  // Duplicates selector, but acceptable since this will be removed before production.
-  $('#date-picker input').removeClass('active').filter('[name=' + day + ']').addClass('active');
+// Defaults to today. delta, if provided, indicates how many days +-today.
+Tweeter.prototype.__update_date = function(delta) {
+  if(!delta) delta = 0;
+  this.__post_at = new Date(); // Defaults to today.
+  // Just setting day and not time, so we want each time component to be 0.
+  this.__post_at.setHours(this.__post_at.getHours() + 24*delta);
+  this.__post_at.setMinutes(0);
+  this.__post_at.setSeconds(0);
+  this.__post_at.setMilliseconds(0);
 }
 
 Tweeter.prototype.__update_time = function() {
@@ -53,19 +32,39 @@ Tweeter.prototype.__update_time = function() {
 }
 
 Tweeter.prototype.__put_post_at_in_form = function() {
-  this.__update_time(); // Date already updated when (or if) corresponding button clicked.
-  // Set to number of seconds since Unix epoch. Divide by 0 to convert from ms to s.
+  this.__update_time(); // Date already updated when corresponding button clicked.
+  // Set to number of seconds since Unix epoch. Divide by 1000 to convert from ms to s.
   this.__new_tweet_form.find('[name=post_at]').val( this.__post_at.getTime() / 1000.0 );
-  console.log(this.__post_at);
 }
 
-Tweeter.prototype.__configure_date_picker_onclick = function() {
+Tweeter.prototype.__configure_day_chooser_onclick = function() {
   var self = this;
-  $('#date-picker input').click(function() {
-    self.__update_date(this.name);
-    console.log(self.__post_at);
+  var day_choosers = $('#day-chooser input');
+  day_choosers.click(function() {
+    day_choosers.removeClass('active').filter('[name=' + this.name + ']').addClass('active');
   });
+  day_choosers.filter('[name!=another_day]').click(function() {
+    self.__date_picker_calendar.hide();
+    self.__update_date(this.name == 'tomorrow' ? 1 : 0);
+    self.__date_picker_calendar.datepicker('setDate', self.__post_at);
+  });
+  day_choosers.filter('[name=another_day]').click(function() {
+    self.__date_picker_calendar.show();
+  });
+  day_choosers.filter('[name=today]').click(); // Default day is today.
 }
+
+Tweeter.prototype.__configure_date_picker_calendar = function() {
+  var self = this;
+  var on_select = function(date) {
+    date = $.datepicker.parseDate('mm/dd/yy', date);
+    self.__post_at = date;
+    $(this).hide();
+  };
+  this.__date_picker_calendar = $('#date-picker-calendar').hide().
+    datepicker({onSelect: on_select});
+}
+
 
 Tweeter.prototype.__convert_24_based_hours_to_12_based_hours = function(hours, period) {
   if(period == 'pm' && hours < 12)  hours += 12;
