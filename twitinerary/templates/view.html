@@ -5,7 +5,7 @@
       <tr><th>Time</th><th>Tweet</th></tr>
     {% for tweet in tweets %}
       <tr>
-        <td>{{ tweet.post_at }}</td>
+        <td><span class="datetime">{{ tweet.post_at|date:"U" }}</span></td>
         <td>
           {{ tweet.tweet }}
           <form action="{% url twitinerary.views.tweets.delete %}" method="post">

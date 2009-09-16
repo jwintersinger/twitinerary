@@ -9,7 +9,6 @@ Fix notifier so that it is positioned from top of viewport -- right now, when do
 
 Review Tweets:
   Make URLs clickable
-  Makes time show in local timezone
 
 OAuth:
   Add error detection/handling
