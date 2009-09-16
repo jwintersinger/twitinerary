@@ -12,6 +12,6 @@ $(document).ready(function() {
 // Add dummy replacement for Firebug's console.log to prevent code that calls it
 // from throwing an exception.
 function configure_console() {
-  if(!window.console) window.console = {log: function() { }};
+  if(!window.console) window.console = { log: function() { } };
 }
 

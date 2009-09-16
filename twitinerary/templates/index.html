@@ -15,18 +15,20 @@
         <li>
           <p>When do you want it posted?</p>
           <p>
-            <select name="date">
-            {% for day in days %}
-              <option value="{{ day|date:"Ymd" }}">{{ day }}</option>
-            {% endfor %}
-            </select>
+            <div id="date-picker">
+              <input name="today" type="button" value="Today" />
+              <input name="tomorrow" type="button" value="Tomorrow" />
+              <input name="another_day" type="button" value="Another day" />
+              <p id="date-notifier"></p>
+            </div>
             at
-            <input name="hour" type="text" value="8" size="2" maxlength="2" />:<input name="minute"
+            <input name="hours" type="text" value="8" size="2" maxlength="2" />:<input name="minutes"
               type="text" value="00" size="2" maxlength="2" />
             <select name="period">
               <option value="am">a.m.</option>
               <option value="pm">p.m.</option>
             </select>
+
             {# post_at calculated dynamically via Javascript prior to form submission. #}
             <input name="post_at" type="hidden" />
           </p>

@@ -11,3 +11,11 @@
 #notifier p {
   padding: 0.4em;
 }
+
+#date-picker { 
+  float: left;
+}
+
+.active {
+  border: 2px solid red;
+}

@@ -8,10 +8,8 @@ from twitinerary.models import ScheduledTweet, Twitterer
 def home(request):
   tweets = ScheduledTweet.all()
   tweets.order('-post_at')
-  today = date.today()
-  days = [today + timedelta(days=n) for n in range(4)]
 
-  response = direct_to_template(request, 'index.html', {'tweets': tweets, 'days': days})
+  response = direct_to_template(request, 'index.html', {'tweets': tweets})
   _indicate_twitter_password_stored(request.user, response)
   return response
 
