@@ -5,62 +5,13 @@
       <li><a href="{% url twitinerary.views.oauth.authenticate %}">Authenticate with Twitter</a>.</li>
     </ol>
   {% else %}
-    <form id="new-tweet" action="{% url twitinerary.views.tweets.new %}" method="post">
-      <ol>
-        <li>
-          <p>Enter your Tweet.</p>
-          <textarea name="tweet" cols="40" rows="2">Tweet.</textarea>
-        </li>
-
-        <li>
-          <p>When do you want it posted?</p>
-          <p>
-            <div id="day-chooser">
-              <input name="today" type="button" value="Today" />
-              <input name="tomorrow" type="button" value="Tomorrow" />
-              <input name="another_day" type="button" value="Another day" />
-              <div id="date-picker-calendar"></div>
-            </div>
-            at
-            <input name="hours" type="text" value="8" size="2" maxlength="2" />:<input name="minutes"
-              type="text" value="00" size="2" maxlength="2" />
-            <select name="period">
-              <option value="am">a.m.</option>
-              <option value="pm">p.m.</option>
-            </select>
-
-            {# post_at calculated dynamically via Javascript prior to form submission. #}
-            <input name="post_at" type="hidden" />
-          </p>
-        </li>
-      </ol>
-      <p><input type="submit" value="Schedule it!" /></p>
-    </form>
-
-    <div id="url-shortener-container">
-      <input id="url-shortener-activator" type="button" value="Shorten URL" />
-      <form id="url-shortener" style="display: none">
-        <input name="long_url" type="text" value="URL to shorten ..." /><input type="submit"
-        value="Shorten URL" />
-      </form>
-    </div>
-
-    <div id="image-uploader-container">
-      <input id="image-uploader-activator" type="button" value="Upload image" />
-      <iframe id="image-uploader-dest" name="image-uploader-dest" style="display: none"></iframe>
-
-      <form id="twitter-password" style="display: none">
-        <input name="password" type="password" />
-        <input type="submit" value="Sign in" />
-      </form>
-
-      <form id="image-uploader" action="{% url twitinerary.views.image_uploader.upload_image %}"
-        method="post" enctype="multipart/form-data" target="image-uploader-dest" style="display: none">
-        <input name="username" type="hidden" value="{{ request.user.username }}" />
-        <input name="password" type="hidden" value="" />
-        <input name="media" type="file" name="media" />
-        <input type="submit" value="Upload image" />
-      </form>
+    <div id="tabs">
+      <ul>
+        <li><a id="schedule_tweet"
+          href="{% url twitinerary.views.tweets.schedule_tweet %}">Schedule new Tweet</a></li>
+        <li><a id="view_tweets"
+          href="{% url twitinerary.views.tweets.view %}">View Tweets</a></li>
+      </ul>
     </div>
   {% endif %}
 

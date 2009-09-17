@@ -7,11 +7,12 @@ Notify user of how many Tweets is too many when refused for excessive activity
 
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
 
-Review Tweets:
-  Make URLs clickable
-
-OAuth:
-  Add error detection/handling
+Edit support for Tweets
+Indicate that times are in local timezone
+Make URLs clickable on review Tweets
+Make image uploader work in IE
+Prevent user from scheduling more Tweets when too many, rather than notifying after schedule attempt
+OAuth: Add error detection/handling
 Design:
   Finish all prose, other writing for app so that Alex may design to it
   Determine new name for application

@@ -26,6 +26,7 @@ ImageUploader.prototype.__configure_image_uploaded = function() {
       if( self.__handle_upload_error(response.find('err')) ) return;
       self.__tweet_input.insertAtCaret(response.find('mediaurl').text());
     };
+
     // Don't bind form destination's onload callback at page load -- we want it
     // to fire only when the form is submitted, not at the initial page load.
     // Must also remove existing callbacks (if any) to prevent multiple callback
@@ -49,7 +50,7 @@ ImageUploader.prototype.__configure_activation = function() {
   this.__activator.click(function() {
     self.__activator.hide();
     if(self.__is_password_stored()) self.__form.show();
-    else                       self.__password_form.show();
+    else                            self.__password_form.show();
   });
 }
 

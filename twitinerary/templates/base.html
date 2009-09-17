@@ -35,7 +35,6 @@
     Signed in as <a
       href="http://twitter.com/{{ request.user.username|iriencode }}"> @{{ request.user.username }}</a>.
       (<a href="{% url twitinerary.views.oauth.sign_out %}">Sign out</a>)
-      (<a href="{% url twitinerary.views.tweets.view %}">Review Tweets</a>)
     {% else %}
       Not signed in.
     {% endif %}
