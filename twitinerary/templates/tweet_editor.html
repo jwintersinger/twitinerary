@@ -1,8 +1,8 @@
-<form id="new-tweet" action="{% url twitinerary.views.tweets.create %}" method="post">
+{% block tweet_form_declaration %}{% endblock %}
   <ol>
     <li>
       <p>Enter your Tweet.</p>
-      <textarea name="tweet" cols="40" rows="2">Tweet.</textarea>
+      <textarea name="tweet" cols="40" rows="2">{{ tweet.tweet }}</textarea>
     </li>
 
     <li>
@@ -15,19 +15,20 @@
           <div id="date-picker-calendar"></div>
         </div>
         at
-        <input name="hours" type="text" value="8" size="2" maxlength="2" />:<input name="minutes"
-          type="text" value="00" size="2" maxlength="2" />
+        <input name="hours" type="text" value="8" size="2" maxlength="2" />:<input
+          name="minutes" type="text" value="00" size="2" maxlength="2" />
         <select name="period">
           <option value="am">a.m.</option>
           <option value="pm">p.m.</option>
         </select>
 
         {# post_at calculated dynamically via Javascript prior to form submission. #}
-        <input name="post_at" type="hidden" />
+        <input name="post_at" type="hidden" value="{{ tweet.post_at }}" />
       </p>
     </li>
   </ol>
-  <p><input type="submit" value="Schedule it!" /></p>
+  <input name="key" type="hidden" value="{{ tweet.key }}" />
+  {% block tweet_form_postamble %}{% endblock %}
 </form>
 
 <div id="url-shortener-container">

@@ -4,7 +4,7 @@ from django.http import HttpResponse
 
 # Should be a POST since request changes state of datastore, but (I believe) App Engine
 # cron will only perform GET requests.
-def batch_tweet(request):
+def batch_send(request):
   tweets = ScheduledTweet.all()
   tweets.filter('post_at  <=', datetime.utcnow())
   tweets.filter('tweeted =', False)

@@ -1,0 +1,7 @@
+{% extends "tweet_editor.html" %}
+{% block tweet_form_declaration %}
+  <form id="new-tweet" action="{% url twitinerary.views.tweets.save %}" method="post">
+{% endblock %}
+{% block tweet_form_postamble %}
+  <p><input type="submit" value="Schedule it!" /></p>
+{% endblock %}

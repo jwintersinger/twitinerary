@@ -8,7 +8,7 @@ from twitinerary.models import ScheduledTweet, Twitterer
 def home(request):
   tweets = ScheduledTweet.all()
   tweets.order('-post_at')
-  response = direct_to_template(request, 'index.html', {'tweets': tweets})
+  response = direct_to_template(request, 'home.html', {'tweets': tweets})
   _indicate_twitter_password_stored(request.user, response)
   return response
 
@@ -23,10 +23,14 @@ def _indicate_twitter_password_stored(user, response):
     # associated Javascript.
     response.set_cookie('twitter_password_stored', 'true')
 
-def schedule_tweet(request):
-  return direct_to_template(request, 'schedule_tweet.html')
+def new(request):
+  return direct_to_template(request, 'new_tweet.html')
 
-def create(request):
+def edit(request):
+  return direct_to_template(request, 'edit_tweet.html',
+      {'tweet': ScheduledTweet.get(request.GET.get('key'))})
+
+def save(request):
   user = request.user
   if not user.is_authenticated():
     return HttpResponse('Not authenticated.', status=401, content_type='text/plain')
@@ -53,7 +57,7 @@ def view(request):
   tweets.filter('user =', request.user)
   tweets.filter('tweeted =', False)
   tweets.order('-post_at')
-  return direct_to_template(request, 'view.html', {'tweets': tweets})
+  return direct_to_template(request, 'view_tweets.html', {'tweets': tweets})
 
 def delete(request):
   try:

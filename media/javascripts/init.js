@@ -14,8 +14,8 @@ function handle_tabs_onload() {
   var tabs = $('#tabs');
 
   tabs.tabs({load: function(event, ui) {
-    var onloads = {
-      schedule_tweet: function() {
+    var tabload_handlers = {
+      new_tweet: function() {
         var new_tweet_form = $('#new-tweet');
         var tweet_input = new_tweet_form.find('[name=tweet]');
 
@@ -24,11 +24,21 @@ function handle_tabs_onload() {
         new ImageUploader(tweet_input, notifier);
       },
 
+      edit_tweet: function() {
+        console.log('In editor.');
+      },
+
       view_tweets: function() {
         new TweetViewer(tabs, notifier);
         new DatetimeHumanizer();
       }
     };
-    onloads[ui.tab.id.replace(/_tab$/, '')]();
+
+    var tabload_handler = tabload_handlers[ui.tab.id.replace(/_tab$/, '')];
+    // If tab has no ID associated with it, it must be an edit tab, since edit
+    // tabs and panels are created dynamically by jQuery UI, rather than being
+    // hardcoded in my markup.
+    if(!tabload_handler) tabload_handler = tabload_handlers.edit_tweet;
+    tabload_handler();
   }});
 }
