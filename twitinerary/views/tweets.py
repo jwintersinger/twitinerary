@@ -37,10 +37,19 @@ def save(request):
   if _too_many_tweets_sent(user):
     return HttpResponse('Too many Tweets sent.', status=403, content_type='text/plain')
 
-  tweet = ScheduledTweet(user       = user,
-                         tweet      = request.POST.get('tweet'),
-                         post_at    = datetime.utcfromtimestamp( float(request.POST.get('post_at', 0)) ),
-                         ip_address = request.META.get('REMOTE_ADDR') )
+  key = request.POST.get('key')
+  if key:
+    tweet = ScheduledTweet.get(key)
+    if tweet.user != request.user:
+      raise Exception('User does not own Tweet')
+  else:
+    tweet = ScheduledTweet()
+
+  properties = {'user':       user,
+                'tweet':      request.POST.get('tweet'),
+                'post_at':    datetime.utcfromtimestamp( float(request.POST.get('post_at', 0)) ),
+                'ip_address': request.META.get('REMOTE_ADDR')}
+  [setattr(tweet, property, properties[property]) for property in properties]
   tweet.put()
   return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
 

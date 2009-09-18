@@ -7,7 +7,11 @@ Notify user of how many Tweets is too many when refused for excessive activity
 
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
 
-Edit support for Tweets
+Edit support for Tweets:
+  Close tab on successful edit
+  Only allow one edit tab to be opened for a given Tweet
+  Set time on edit form to whatever Tweet's post_at time is, rather than default time
+
 Indicate that times are in local timezone
 Make URLs clickable on review Tweets
 Make image uploader work in IE
