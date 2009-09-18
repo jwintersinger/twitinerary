@@ -1,13 +1,13 @@
 function ImageUploader(container, tweet_input, notifier) {
-  this.__form = container.find('.image-uploader');
-  this.__destination = container.find('.image-uploader-dest');
-  this.__activator = container.find('.image-uploader-activator');
-  this.__password_form = container.find('.twitter-password');
-  this.__tweet_input = $(tweet_input);
-  this.__notifier = notifier;
+  this.__tweet_input            = $(tweet_input);
+  this.__notifier               = notifier;
+  this.__form                   = container.find('.image-uploader');
+  this.__activator              = container.find('.image-uploader-activator');
+  this.__password_form          = container.find('.twitter-password');
   this.__stored_password_cookie = 'twitter_password_stored';
 
   this.__configure_password_form_submit();
+  this.__configure_destination();
   this.__configure_image_uploaded();
   this.__configure_activation();
 }
@@ -78,4 +78,34 @@ ImageUploader.prototype.__is_password_stored = function() {
 ImageUploader.prototype.__clear_stored_password = function() {
   this.__password = null;
   $.cookie(this.__stored_password_cookie, null); // Delete cookie.
+}
+
+ImageUploader.prototype.__configure_destination = function() {
+  // iframe's name must be set *before* it is inserted into the DOM. Previously,
+  // I had an iframe with no name attribute set in my template, and I set its
+  // name property dynamically in this method. When I did this,
+  // though everything will seem proper (this.__destination.attr('name')
+  // returned the expected value, which was also the value of
+  // this.__form.attr('target')), the form submission opened in a new window
+  // rather than the target iframe. However, when the name attribute is set on
+  // the iframe before it is inserted into the DOM, everything works as
+  // expected, with the form loaded into the invisible iframe.
+  //
+  // 'name' attribute on target iframe must be unique, or Firefox will throw a
+  // cryptic NS_ERROR_FAILURE error. As there may be multiple copies of the iframe
+  // in the DOM (one for "new Tweet" tab, one for each of any "edit Tweet" tabs),
+  // we can't simply have a single iframe in our template with a statically-set
+  // name.
+
+  this.__destination_class      = 'image-uploader-dest';
+  var destination_prefix = this.__destination_class + '-';
+
+  var index = 0;
+  do {
+    var destination_name = destination_prefix + index++;
+  } while($('.' + this.__destination_class + '[name=' + destination_name + ']').length > 0);
+
+  this.__destination = $('<iframe></iframe>').attr('class', this.__destination_class).
+    attr('name', destination_name).css('display', 'none').insertBefore(this.__form);
+  this.__form.attr('target', destination_name);
 }

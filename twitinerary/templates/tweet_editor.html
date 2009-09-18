@@ -1,4 +1,4 @@
-{% block tweet_form_declaration %}{% endblock %}
+<form class="tweet-form" action="{% url twitinerary.views.tweets.save %}" method="post">
   <ol>
     <li>
       <p>Enter your Tweet.</p>
@@ -41,7 +41,6 @@
 
 <div class="image-uploader-container">
   <input class="image-uploader-activator" type="button" value="Upload image" />
-  <iframe class="image-uploader-dest" name="image-uploader-dest" style="display: none"></iframe>
 
   <form class="twitter-password" style="display: none">
     <input name="password" type="password" />
@@ -49,7 +48,7 @@
   </form>
 
   <form class="image-uploader" action="{% url twitinerary.views.image_uploader.upload_image %}"
-    method="post" enctype="multipart/form-data" target="image-uploader-dest" style="display: none">
+    method="post" enctype="multipart/form-data" style="display: none">
     <input name="username" type="hidden" value="{{ request.user.username }}" />
     <input name="password" type="hidden" value="" />
     <input name="media" type="file" name="media" />
