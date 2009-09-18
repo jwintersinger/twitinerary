@@ -11,8 +11,9 @@ function configure_console() {
 
 function handle_tabs_onload() {
   var notifier = new Notifier('#notifier');
+  var tabs = $('#tabs');
 
-  $('#tabs').tabs({load: function(event, ui) {
+  tabs.tabs({load: function(event, ui) {
     var onloads = {
       schedule_tweet: function() {
         var new_tweet_form = $('#new-tweet');
@@ -24,9 +25,10 @@ function handle_tabs_onload() {
       },
 
       view_tweets: function() {
+        new TweetViewer(tabs, notifier);
         new DatetimeHumanizer();
       }
     };
-    onloads[ui.tab.id]();
+    onloads[ui.tab.id.replace(/_tab$/, '')]();
   }});
 }

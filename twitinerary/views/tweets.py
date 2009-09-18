@@ -62,5 +62,5 @@ def delete(request):
     tweet = None
   if request.method == 'POST' and tweet and tweet.user == request.user:
     tweet.delete()
-  return HttpResponseRedirect(reverse(view))
+  return HttpResponse('Your Tweet has been deleted.', content_type='text/plain')
 
