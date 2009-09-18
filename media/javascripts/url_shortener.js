@@ -1,7 +1,7 @@
-function UrlShortener(tweet_input, notifier) {
-  this.__form = $('#url-shortener');
+function UrlShortener(container, tweet_input, notifier) {
+  this.__form = container.find('.url-shortener');
   this.__url_input = this.__form.find('[name=long_url]');
-  this.__activator = $('#url-shortener-activator');
+  this.__activator = container.find('.url-shortener-activator');
   this.__tweet_input = $(tweet_input);
   this.__notifier = notifier;
 

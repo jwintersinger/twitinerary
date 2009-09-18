@@ -1,8 +1,8 @@
-function ImageUploader(tweet_input, notifier) {
-  this.__form = $('#image-uploader');
-  this.__destination = $('#image-uploader-dest');
-  this.__activator = $('#image-uploader-activator');
-  this.__password_form = $('#twitter-password');
+function ImageUploader(container, tweet_input, notifier) {
+  this.__form = container.find('.image-uploader');
+  this.__destination = container.find('.image-uploader-dest');
+  this.__activator = container.find('.image-uploader-activator');
+  this.__password_form = container.find('.twitter-password');
   this.__tweet_input = $(tweet_input);
   this.__notifier = notifier;
   this.__stored_password_cookie = 'twitter_password_stored';

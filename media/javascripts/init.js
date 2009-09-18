@@ -14,14 +14,15 @@ function handle_tabs_onload() {
   var tabs = $('#tabs');
 
   tabs.tabs({load: function(event, ui) {
+    var panel = $(ui.panel);
     var tabload_handlers = {
       new_tweet: function() {
-        var new_tweet_form = $('#new-tweet');
-        var tweet_input = new_tweet_form.find('[name=tweet]');
+        var tweet_form = panel.find('.tweet-form');
+        var tweet_input = tweet_form.find('[name=tweet]');
 
-        new Tweeter(new_tweet_form, notifier);
-        new UrlShortener(tweet_input, notifier);
-        new ImageUploader(tweet_input, notifier);
+        new Tweeter(panel, tweet_form, notifier);
+        new UrlShortener(panel, tweet_input, notifier);
+        new ImageUploader(panel, tweet_input, notifier);
       },
 
       edit_tweet: function() {

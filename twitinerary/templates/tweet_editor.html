@@ -8,11 +8,11 @@
     <li>
       <p>When do you want it posted?</p>
       <p>
-        <div id="day-chooser">
+        <div class="day-chooser">
           <input name="today" type="button" value="Today" />
           <input name="tomorrow" type="button" value="Tomorrow" />
           <input name="another_day" type="button" value="Another day" />
-          <div id="date-picker-calendar"></div>
+          <div class="date-picker-calendar"></div>
         </div>
         at
         <input name="hours" type="text" value="8" size="2" maxlength="2" />:<input
@@ -31,24 +31,24 @@
   {% block tweet_form_postamble %}{% endblock %}
 </form>
 
-<div id="url-shortener-container">
-  <input id="url-shortener-activator" type="button" value="Shorten URL" />
-  <form id="url-shortener" style="display: none">
+<div class="url-shortener-container">
+  <input class="url-shortener-activator" type="button" value="Shorten URL" />
+  <form class="url-shortener" style="display: none">
     <input name="long_url" type="text" value="URL to shorten ..." /><input type="submit"
     value="Shorten URL" />
   </form>
 </div>
 
-<div id="image-uploader-container">
-  <input id="image-uploader-activator" type="button" value="Upload image" />
-  <iframe id="image-uploader-dest" name="image-uploader-dest" style="display: none"></iframe>
+<div class="image-uploader-container">
+  <input class="image-uploader-activator" type="button" value="Upload image" />
+  <iframe class="image-uploader-dest" name="image-uploader-dest" style="display: none"></iframe>
 
-  <form id="twitter-password" style="display: none">
+  <form class="twitter-password" style="display: none">
     <input name="password" type="password" />
     <input type="submit" value="Sign in" />
   </form>
 
-  <form id="image-uploader" action="{% url twitinerary.views.image_uploader.upload_image %}"
+  <form class="image-uploader" action="{% url twitinerary.views.image_uploader.upload_image %}"
     method="post" enctype="multipart/form-data" target="image-uploader-dest" style="display: none">
     <input name="username" type="hidden" value="{{ request.user.username }}" />
     <input name="password" type="hidden" value="" />
