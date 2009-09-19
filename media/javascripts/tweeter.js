@@ -8,10 +8,11 @@ function Tweeter(container, tweet_form, notifier) {
   this.__container = container;
   this.__tweet_form = $(tweet_form);
   this.__notifier = notifier;
+  this.__submission_callbacks = [];
 
   this.__configure_date_picker_calendar();
-  this.__configure_day_chooser_onclick();
   this.__configure_tweet_submission();
+  this.reset();
 }
 
 // Defaults to today. delta, if provided, indicates how many days +-today.
@@ -59,6 +60,11 @@ Tweeter.prototype.__configure_day_chooser_onclick = function() {
   day_choosers.filter('[name=today]').click(); // Default day is today.
 }
 
+Tweeter.prototype.reset = function() {
+  this.__tweet_form[0].reset();
+  this.__configure_day_chooser_onclick();
+}
+
 Tweeter.prototype.__configure_date_picker_calendar = function() {
   var self = this;
   var on_select = function(date) {
@@ -78,6 +84,11 @@ Tweeter.prototype.__convert_24_based_hours_to_12_based_hours = function(hours, p
   return hours;
 }
 
+// Callbacks called on successful submission of Tweet.
+Tweeter.prototype.add_submission_callback = function(callback) {
+  this.__submission_callbacks.push(callback);
+}
+
 Tweeter.prototype.__configure_tweet_submission = function() {
   var self = this;
   this.__tweet_form.submit(function() {
@@ -88,6 +99,7 @@ Tweeter.prototype.__configure_tweet_submission = function() {
             success: function(response, status) {
               console.log([response, status]);
               self.__notifier.notify_success(response);
+              $.each(self.__submission_callbacks, function() { this(); });
             },
             error: function(xhr, status, error) {
               console.log([xhr, status, error]);

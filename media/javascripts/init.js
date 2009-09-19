@@ -15,17 +15,26 @@ function handle_tabs_onload() {
 
   tabs.tabs({load: function(event, ui) {
     var panel = $(ui.panel);
-    var tweet_form_tabload = function() {
+
+    var configure_tweet_editor = function() {
       var tweet_form = panel.find('.tweet-form');
       var tweet_input = tweet_form.find('[name=tweet]');
-
-      new Tweeter(panel, tweet_form, notifier);
       new UrlShortener(panel, tweet_input, notifier);
       new ImageUploader(panel, tweet_input, notifier);
+      return new Tweeter(panel, tweet_form, notifier);
     };
+
     var tabload_handlers = {
-      new_tweet: tweet_form_tabload, 
-      edit_tweet: tweet_form_tabload,
+      new_tweet: function() {
+        var tweeter = configure_tweet_editor();
+        tweeter.add_submission_callback(function() { tweeter.reset(); });
+      },
+
+      edit_tweet: function() {
+        var tweeter = configure_tweet_editor();
+        tweeter.add_submission_callback(function() { tabs.tabs('remove', ui.index); });
+      },
+
       view_tweets: function() {
         new TweetViewer(tabs, notifier);
         new DatetimeHumanizer();
