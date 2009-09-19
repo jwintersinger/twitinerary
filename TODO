@@ -8,10 +8,17 @@ Notify user of how many Tweets is too many when refused for excessive activity
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
 
 Edit support for Tweets:
+  Switch to edit tab after clicking edit button
   Close tab on successful edit
   Only allow one edit tab to be opened for a given Tweet
   Set time on edit form to whatever Tweet's post_at time is, rather than default time
+  Don't allow editing of posted Tweets (user can open edit tab, allow Tweet to be posted, then refresh tab)
+  Ensure contents of tab not reloaded when switching back to it, overwriting any changes made to content
+  Disable "too many Tweets" check when saving edited Tweet
 
+URL shortener: automatically append "http://" if not present
+
+Don't allow Tweets posted in past
 Indicate that times are in local timezone
 Make URLs clickable on review Tweets
 Make image uploader work in IE
@@ -20,6 +27,7 @@ OAuth: Add error detection/handling
 Design:
   Finish all prose, other writing for app so that Alex may design to it
   Determine new name for application
+
 
 =========
 Long term

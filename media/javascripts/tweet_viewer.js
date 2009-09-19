@@ -13,6 +13,8 @@ TweetViewer.prototype.__configure_edit_listeners = function() {
   this.__edit_forms.submit(function(event) {
     var form = $(event.target);
     self.__tabs.tabs('add', event.target.action + '?' + form.serialize(), 'Edit tweet');
+    // Tab not automatically switched to after creation.
+    self.__tabs.tabs('select', self.__tabs.tabs('length') - 1);
     return false;
   });
 }
