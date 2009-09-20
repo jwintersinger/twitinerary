@@ -4,7 +4,8 @@ Short term
 Add login_required decorator to appropriate views
   Add post_required decorator as well
 Get Satisfaction support
-Notify user of how many Tweets is too many when refused for excessive activity
+Indication of how many characters remaining in Tweet
+  Show red when low on characters -- assign different classes
 
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
 
@@ -12,14 +13,17 @@ Edit support for Tweets:
   Only allow one edit tab to be opened for a given Tweet
   Set time on edit form to whatever Tweet's post_at time is, rather than default time
   Ensure contents of tab not reloaded when switching back to it, overwriting any changes made to content
+  Add cancel button
 
 URL shortener: automatically append "http://" if not present
 
+Change "Another day" button text to indicate date
 Don't allow Tweets posted in past
 Indicate that times are in local timezone
+Prevent user from scheduling more Tweets when too many, rather than notifying after schedule attempt
+  Notify user of how many Tweets is too many when refused for excessive activity
 Make URLs clickable on review Tweets
 Make image uploader work in IE
-Prevent user from scheduling more Tweets when too many, rather than notifying after schedule attempt
 OAuth: Add error detection/handling
 Design:
   Finish all prose, other writing for app so that Alex may design to it

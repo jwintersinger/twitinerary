@@ -34,7 +34,7 @@ indexes:
   - name: tweeted
   - name: post_at
 
-# Unused in query history -- copied from input.
+# Used 35 times in query history.
 - kind: twitinerary_scheduledtweet
   properties:
   - name: tweeted
