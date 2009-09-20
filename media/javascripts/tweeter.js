@@ -108,3 +108,5 @@ Tweeter.prototype.__configure_tweet_submission = function() {
     return false;
   });
 }
+
+Tweeter.prototype.get_tweet_form = function() { return this.__tweet_form; }

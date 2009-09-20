@@ -20,10 +20,9 @@ function handle_tabs_onload() {
     // will be performed, too).
     cache: true,
     load: function(event, ui) {
-      return on_tab_load(get_tab_name(ui.tab.id), $(ui.panel), tabs, notifier);
+      return on_tab_load(ui, tabs, notifier);
     },
     show: function(event, ui) {
-      console.log(event, ui);
       // "View Tweets" tab must be reloaded to reflect the latest Tweets
       // added, edited, or deleted -- don't want its contents cached.
       // TODO: when first loaded and contents aren't already cached, tab is
@@ -38,7 +37,10 @@ function get_tab_name(tab_id) {
   return tab_id.replace(/_tab$/, '');
 }
 
-function on_tab_load(tab_name, panel, tabs, notifier) {
+function on_tab_load(ui, tabs, notifier) {
+  var tab_name = get_tab_name(ui.tab.id);
+  var panel = $(ui.panel);
+
   var configure_tweet_editor = function() {
     var tweet_form = panel.find('.tweet-form');
     var tweet_input = tweet_form.find('[name=tweet]');
@@ -55,7 +57,9 @@ function on_tab_load(tab_name, panel, tabs, notifier) {
 
     edit_tweet: function() {
       var tweeter = configure_tweet_editor();
-      tweeter.add_submission_callback(function() { tabs.tabs('remove', ui.index); });
+      var close_tab = function() { tabs.tabs('remove', ui.index); };
+      tweeter.add_submission_callback(close_tab);
+      tweeter.get_tweet_form().find('[name=cancel]').click(close_tab);
     },
 
     view_tweets: function() {
