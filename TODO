@@ -15,7 +15,6 @@ Edit support for Tweets:
 
 URL shortener: automatically append "http://" if not present
 
-Change "Another day" button text to indicate date
 Don't allow Tweets posted in past
 Indicate that times are in local timezone
 Prevent user from scheduling more Tweets when too many, rather than notifying after schedule attempt

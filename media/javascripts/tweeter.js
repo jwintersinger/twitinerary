@@ -46,17 +46,24 @@ Tweeter.prototype.__put_post_at_in_form = function() {
 Tweeter.prototype.__configure_day_chooser_onclick = function() {
   var self = this;
   var day_choosers = this.__container.find('.day-chooser input');
+
   day_choosers.click(function() {
     day_choosers.removeClass('active').filter('[name=' + this.name + ']').addClass('active');
   });
+
   day_choosers.filter('[name!=another_day]').click(function() {
     self.__date_picker_calendar.hide();
     self.__update_date(this.name == 'tomorrow' ? 1 : 0);
     self.__date_picker_calendar.datepicker('setDate', self.__post_at);
+    self.__date_picker_activator.attr('value', self.__date_picker_activator_default_value);
   });
-  day_choosers.filter('[name=another_day]').click(function() {
+
+  this.__date_picker_activator = day_choosers.filter('[name=another_day]');
+  this.__date_picker_activator_default_value = this.__date_picker_activator.attr('value');
+  this.__date_picker_activator.click(function() {
     self.__date_picker_calendar.show();
   });
+  
   day_choosers.filter('[name=today]').click(); // Default day is today.
 }
 
@@ -70,6 +77,7 @@ Tweeter.prototype.__configure_date_picker_calendar = function() {
   var on_select = function(date) {
     date = $.datepicker.parseDate('mm/dd/yy', date);
     self.__post_at = date;
+    self.__date_picker_activator.attr('value', $.datepicker.formatDate('M. d', date));
     $(this).hide();
   };
   this.__date_picker_calendar = this.__container.find('.date-picker-calendar').hide().
