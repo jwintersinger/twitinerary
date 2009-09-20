@@ -39,7 +39,9 @@ UrlShortener.prototype.__configure_clear_on_activation = function() {
 UrlShortener.prototype.__configure_form_submission = function() {
   var self = this;
   this.__form.submit(function() {
-    var long_url = self.__url_input.val();
+    var long_url = $.trim(self.__url_input.val());
+    if(!long_url.match(/^[a-zA-Z0-9]+:\/\//)) long_url = 'http://' + long_url;
+
     var callback = function (data) {
       // data.errorMessage will be set if a global error occurred, such as no
       // URL provided (empty input box). Otherwise, error message will be
