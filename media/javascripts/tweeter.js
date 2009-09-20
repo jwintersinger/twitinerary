@@ -55,11 +55,14 @@ Tweeter.prototype.__configure_day_chooser_onclick = function() {
     self.__date_picker_calendar.hide();
     self.__update_date(this.name == 'tomorrow' ? 1 : 0);
     self.__date_picker_calendar.datepicker('setDate', self.__post_at);
-    self.__date_picker_activator.attr('value', self.__date_picker_activator_default_value);
+    self.__reset_date_picker_activator();
   });
 
   this.__date_picker_activator = day_choosers.filter('[name=another_day]');
-  this.__date_picker_activator_default_value = this.__date_picker_activator.attr('value');
+  // Only set default value on first call. Afterward, when form is being reset,
+  // value of the button may already have been changed to a non-default value.
+  if(!this.__date_picker_activator_default_value)
+    this.__date_picker_activator_default_value = this.__date_picker_activator.attr('value');
   this.__date_picker_activator.click(function() {
     self.__date_picker_calendar.show();
   });
@@ -70,6 +73,7 @@ Tweeter.prototype.__configure_day_chooser_onclick = function() {
 Tweeter.prototype.reset = function() {
   this.__tweet_form[0].reset();
   this.__configure_day_chooser_onclick();
+  this.__reset_date_picker_activator();
 }
 
 Tweeter.prototype.__configure_date_picker_calendar = function() {
@@ -115,6 +119,10 @@ Tweeter.prototype.__configure_tweet_submission = function() {
             } });
     return false;
   });
+}
+
+Tweeter.prototype.__reset_date_picker_activator = function() {
+  this.__date_picker_activator.attr('value', this.__date_picker_activator_default_value);
 }
 
 Tweeter.prototype.get_tweet_form = function() { return this.__tweet_form; }
