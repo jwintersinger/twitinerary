@@ -13,13 +13,12 @@ Edit support for Tweets:
   Only allow one edit tab to be opened for a given Tweet
   Set time on edit form to whatever Tweet's post_at time is, rather than default time
 
-URL shortener: automatically append "http://" if not present
+URL shortener: automatically prepend "http://" if not present
 
+Add "most recent Tweet" at bottom, along with edit/delete buttons
 Don't allow Tweets posted in past
 Indicate that times are in local timezone
-Prevent user from scheduling more Tweets when too many, rather than notifying after schedule attempt
-  Notify user of how many Tweets is too many when refused for excessive activity
-Make URLs clickable on review Tweets
+  Use little question mark that, when hovered, displays explanation
 Make image uploader work in IE
 OAuth: Add error detection/handling
 Design:
@@ -33,3 +32,5 @@ Long term
 Support multiple Twitter accounts?
 Show Tweets regarding application on homepage -- people who Tweet @account
 Shorten URLs using user's bit.ly account rather than our own
+Prevent user from scheduling more Tweets when too many, rather than notifying after schedule attempt
+  Notify user of how many Tweets is too many when refused for excessive activity

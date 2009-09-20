@@ -5,7 +5,7 @@
     <tr>
       <td><span class="datetime">{{ tweet.post_at|date:"U" }}</span></td>
       <td>
-        {{ tweet.tweet }}
+        {{ tweet.tweet|urlize }}
         <form class="tweet-editor" action="{% url twitinerary.views.tweets.edit %}" method="get">
           <input name="key" type="hidden" value="{{ tweet.key }}" />
           <input type="submit" value="Edit" />
