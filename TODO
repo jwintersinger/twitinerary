@@ -13,11 +13,13 @@ Edit support for Tweets:
   Only allow one edit tab to be opened for a given Tweet
   Set time on edit form to whatever Tweet's post_at time is, rather than default time
 
+Set default time to (now + 1 hour)
 Add "most recent Tweet" at bottom, along with edit/delete buttons
 Don't allow Tweets posted in past
 Indicate that times are in local timezone
   Use little question mark that, when hovered, displays explanation
 Make image uploader work in IE
+
 OAuth: Add error detection/handling
 Design:
   Finish all prose, other writing for app so that Alex may design to it

@@ -11,6 +11,7 @@ function configure_console() {
 
 function handle_tabs_onload() {
   var notifier = new Notifier('#notifier');
+  var tweet_state = new TweetState();
   var tabs = $('#tabs');
 
   tabs.tabs({
@@ -20,7 +21,7 @@ function handle_tabs_onload() {
     // will be performed, too).
     cache: true,
     load: function(event, ui) {
-      return on_tab_load(ui, tabs, notifier);
+      return on_tab_load(ui, tabs, notifier, tweet_state);
     },
     show: function(event, ui) {
       // "View Tweets" tab must be reloaded to reflect the latest Tweets
@@ -37,7 +38,7 @@ function get_tab_name(tab_id) {
   return tab_id.replace(/_tab$/, '');
 }
 
-function on_tab_load(ui, tabs, notifier) {
+function on_tab_load(ui, tabs, notifier, tweet_state) {
   var tab_name = get_tab_name(ui.tab.id);
   var panel = $(ui.panel);
 
@@ -57,13 +58,16 @@ function on_tab_load(ui, tabs, notifier) {
 
     edit_tweet: function() {
       var tweeter = configure_tweet_editor();
-      var close_tab = function() { tabs.tabs('remove', ui.index); };
-      tweeter.add_submission_callback(close_tab);
-      tweeter.get_tweet_form().find('[name=cancel]').click(close_tab);
+      var editing_complete = function() {
+        tabs.tabs('remove', ui.index);
+        tweet_state.remove_being_edited(tweeter.get_key());
+      };
+      tweeter.add_submission_callback(editing_complete);
+      tweeter.get_tweet_form().find('[name=cancel]').click(editing_complete);
     },
 
     view_tweets: function() {
-      new TweetViewer(tabs, notifier);
+      new TweetViewer(tabs, notifier, tweet_state);
       new DatetimeHumanizer();
     }
   };

@@ -126,3 +126,11 @@ Tweeter.prototype.__reset_date_picker_activator = function() {
 }
 
 Tweeter.prototype.get_tweet_form = function() { return this.__tweet_form; }
+
+Tweeter.prototype.get_key = function() {
+  return Tweeter.extract_key(this.__tweet_form);
+}
+
+Tweeter.extract_key = function(form) {
+  return $(form).find('[name=key]').val();
+}

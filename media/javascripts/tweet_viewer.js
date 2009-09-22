@@ -1,6 +1,7 @@
-function TweetViewer(tabs, notifier) {
+function TweetViewer(tabs, notifier, tweet_state) {
   this.__tabs = $(tabs);
   this.__notifier = notifier;
+  this.__tweet_state = tweet_state;
   this.__edit_forms = $('.tweet-editor');
   this.__delete_forms = $('.tweet-deleter');
 
@@ -12,6 +13,10 @@ TweetViewer.prototype.__configure_edit_listeners = function() {
   var self = this;
   this.__edit_forms.submit(function(event) {
     var form = $(event.target);
+    var key = Tweeter.extract_key(form);
+    if(self.__tweet_state.is_being_edited(key)) return false;
+    self.__tweet_state.add_being_edited(key);
+
     self.__tabs.tabs('add', event.target.action + '?' + form.serialize(), 'Edit tweet');
     // Tab not automatically switched to after creation.
     self.__tabs.tabs('select', self.__tabs.tabs('length') - 1);
