@@ -32,6 +32,8 @@ function handle_tabs_onload() {
         tabs.tabs('load', tabs.tabs('option', 'selected'));
     }
   });
+  // Allow tabs to be dragged and dropped.
+  tabs.find('.ui-tabs-nav').sortable({axis: 'x'});
 }
 
 function get_tab_name(tab_id) {
@@ -58,9 +60,12 @@ function on_tab_load(ui, tabs, notifier, tweet_state) {
 
     edit_tweet: function() {
       var tweeter = configure_tweet_editor();
+      var key = tweeter.get_key();
+      tweet_state.add_being_edited(key, panel.attr('id'));
+
       var editing_complete = function() {
         tabs.tabs('remove', ui.index);
-        tweet_state.remove_being_edited(tweeter.get_key());
+        tweet_state.remove_being_edited(key);
       };
       tweeter.add_submission_callback(editing_complete);
       tweeter.get_tweet_form().find('[name=cancel]').click(editing_complete);

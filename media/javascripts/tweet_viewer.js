@@ -14,8 +14,10 @@ TweetViewer.prototype.__configure_edit_listeners = function() {
   this.__edit_forms.submit(function(event) {
     var form = $(event.target);
     var key = Tweeter.extract_key(form);
-    if(self.__tweet_state.is_being_edited(key)) return false;
-    self.__tweet_state.add_being_edited(key);
+    if(self.__tweet_state.is_being_edited(key)) {
+      self.__tabs.tabs('select', '#' + self.__tweet_state.get_editing_panel_id(key));
+      return false;
+    }
 
     self.__tabs.tabs('add', event.target.action + '?' + form.serialize(), 'Edit tweet');
     // Tab not automatically switched to after creation.
