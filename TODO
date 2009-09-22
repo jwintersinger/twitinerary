@@ -10,10 +10,8 @@ Indication of how many characters remaining in Tweet
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
 
 Edit support for Tweets:
-  Only allow one edit tab to be opened for a given Tweet
   Set time on edit form to whatever Tweet's post_at time is, rather than default time
-Close edit tabs on delete
-Place focus in "enter Tweet" box on pageload
+  Close edit tabs on delete
 
 Set default time to (now + 1 hour)
 Add "most recent Tweet" at bottom, along with edit/delete buttons

@@ -45,11 +45,11 @@ function on_tab_load(ui, tabs, notifier, tweet_state) {
   var panel = $(ui.panel);
 
   var configure_tweet_editor = function() {
-    var tweet_form = panel.find('.tweet-form');
-    var tweet_input = tweet_form.find('[name=tweet]');
+    var tweeter = new Tweeter(panel, notifier);
+    var tweet_input = tweeter.get_tweet_input();
     new UrlShortener(panel, tweet_input, notifier);
     new ImageUploader(panel, tweet_input, notifier);
-    return new Tweeter(panel, tweet_form, notifier);
+    return tweeter;
   };
 
   var tabload_handlers = {

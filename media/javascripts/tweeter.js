@@ -1,4 +1,4 @@
-function Tweeter(container, tweet_form, notifier) {
+function Tweeter(container, notifier) {
   // Note that when selecting elements, we work by identifying the element by
   // its class within the container, rather than simply selecting by an ID. The
   // reason for this is that multiple such elements may be present in the DOM --
@@ -6,7 +6,7 @@ function Tweeter(container, tweet_form, notifier) {
   // multiple instances of the Tweet form may be present: the single
   // "new Tweet" tab as well as multiple possible "edit Tweet" tabs.
   this.__container = container;
-  this.__tweet_form = $(tweet_form);
+  this.__tweet_form = container.find('.tweet-form');
   this.__notifier = notifier;
   this.__submission_callbacks = [];
 
@@ -74,6 +74,7 @@ Tweeter.prototype.reset = function() {
   this.__tweet_form[0].reset();
   this.__configure_day_chooser_onclick();
   this.__reset_date_picker_activator();
+  this.get_tweet_input().focus();
 }
 
 Tweeter.prototype.__configure_date_picker_calendar = function() {
@@ -133,4 +134,8 @@ Tweeter.prototype.get_key = function() {
 
 Tweeter.extract_key = function(form) {
   return $(form).find('[name=key]').val();
+}
+
+Tweeter.prototype.get_tweet_input = function() {
+  return this.__tweet_form.find('[name=tweet]');
 }
