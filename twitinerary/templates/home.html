@@ -15,9 +15,5 @@
     </div>
   {% endif %}
 
-  <ul>
-  {% for tweet in tweets %}
-    <li>[{{ tweet.user.username }}] [{{ tweet.post_at }}] {{ tweet.tweet }}</li>
-  {% endfor %}
-  </ul>
+  <p id="most-recent-tweet"></p>
 {% endblock %}

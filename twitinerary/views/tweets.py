@@ -10,9 +10,7 @@ from twitinerary.models import ScheduledTweet, Twitterer
 # Views
 #=======
 def home(request):
-  tweets = ScheduledTweet.all()
-  tweets.order('-post_at')
-  response = direct_to_template(request, 'home.html', {'tweets': tweets})
+  response = direct_to_template(request, 'home.html')
   _indicate_twitter_password_stored(request.user, response)
   return response
 
@@ -49,12 +47,7 @@ def save(request):
 def view(request):
   if not request.user.is_authenticated():
     return HttpResponse('Not authenticated.', status=401, content_type='text/plain')
-  tweets = ScheduledTweet.all()
-  # TODO: require login.
-  tweets.filter('user =', request.user)
-  tweets.filter('tweeted =', False)
-  tweets.order('-post_at')
-  tweets.order('-created_at')
+  tweets = ScheduledTweet.untweeted(request.user)
   return direct_to_template(request, 'view_tweets.html', {'tweets': tweets})
 
 def delete(request):
@@ -62,6 +55,19 @@ def delete(request):
   if request.method == 'POST':
     tweet.delete()
   return HttpResponse('Your Tweet has been deleted.', content_type='text/plain')
+
+def most_recent(request):
+  from django.utils import simplejson as json
+  # Use same conversion method that Django uses in date:"U" filter.
+  from django.utils.dateformat import DateFormat
+  user = request.user
+
+  if not user.is_authenticated():
+    response = {'error': 'Not authenticated.'}
+  else:
+    tweet = ScheduledTweet.untweeted(user).get()
+    response = {'tweet': tweet.tweet, 'post_at': DateFormat(tweet.post_at).U()}
+  return HttpResponse(json.dumps(response), content_type='application/json')
 
 
 #====================

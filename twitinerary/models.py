@@ -38,3 +38,12 @@ class ScheduledTweet(db.Model):
   created_at = db.DateTimeProperty(auto_now_add = True)
   ip_address = db.StringProperty()
   tweeted    = db.BooleanProperty(default = False)
+
+  @classmethod
+  def untweeted(cls, user):
+    tweets = cls.all()
+    tweets.filter('user =', user)
+    tweets.filter('tweeted =', False)
+    tweets.order('-post_at')
+    tweets.order('-created_at')
+    return tweets

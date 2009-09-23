@@ -11,7 +11,6 @@ Fix notifier so that it is positioned from top of viewport -- right now, when do
 Better handle multiple notifications in short span of time
 
 Reset URL shortener & image uploader after Tweet submitted (close them if open)
-Order list of Tweets by [post_at, created_at]
 
 Add "most recent Tweet" at bottom, along with edit/delete buttons
 Don't allow Tweets posted in past

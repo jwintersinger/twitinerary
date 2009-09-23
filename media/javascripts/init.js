@@ -1,6 +1,7 @@
 $(document).ready(function() {
   configure_console();
   handle_tabs_onload();
+  new MostRecentTweetDisplay();
 });
 
 // Add dummy replacement for Firebug's console.log to prevent code that calls it
