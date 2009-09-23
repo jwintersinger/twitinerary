@@ -8,10 +8,10 @@ Indication of how many characters remaining in Tweet
   Show red when low on characters -- assign different classes
 
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
+Better handle multiple notifications in short span of time
 
-Edit support for Tweets:
-  Close edit tabs on delete
 Reset URL shortener & image uploader after Tweet submitted (close them if open)
+Order list of Tweets by [post_at, created_at]
 
 Add "most recent Tweet" at bottom, along with edit/delete buttons
 Don't allow Tweets posted in past

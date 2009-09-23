@@ -32,3 +32,19 @@ jQuery.fn.insertAtCaret = function(str) {
     self.value += str;
   }
 };
+
+$.extend($.ui.tabs.prototype, {
+  // Returns -1 if not found. Using selectors rather than internal state of
+  // object to find tabs is something of a hack, but it is less likely to break
+  // with jQuery UI upgrades, as selectors are less likely to change than
+  // internal state, given that people theme their interface via selectors.
+  get_index: function(selector) {
+    return $.inArray($(selector)[0], $('.ui-tabs-panel'));
+  },
+
+  // Included remove() only works by 
+  remove_by_selector: function(selector) {
+    var index = this.get_index(selector);
+    if(index != -1) return this.remove(index);
+  }
+});

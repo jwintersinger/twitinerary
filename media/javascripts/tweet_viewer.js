@@ -15,7 +15,7 @@ TweetViewer.prototype.__configure_edit_listeners = function() {
     var form = $(event.target);
     var key = Tweeter.extract_key(form);
     if(self.__tweet_edit_state.is_being_edited(key)) {
-      self.__tabs.tabs('select', '#' + self.__tweet_edit_state.get_editing_panel_id(key));
+      self.__tabs.tabs('select', '#' + self.__tweet_edit_state.get_edit_panel_id(key));
       return false;
     }
 
@@ -29,12 +29,17 @@ TweetViewer.prototype.__configure_edit_listeners = function() {
 TweetViewer.prototype.__configure_delete_listeners = function() {
   var self = this;
   this.__delete_forms.submit(function(event) {
+    var form = event.target;
+
     var after_delete = function(success, message) {
       // Reload currently-selected tab.
       self.__tabs.tabs('load', self.__tabs.tabs('option', 'selected'));
       self.__notifier['notify_' + (success ? 'success' : 'failure')](message);
+
+      var key = Tweeter.extract_key(form);
+      self.__tabs.tabs('remove_by_selector', '#' + self.__tweet_edit_state.get_edit_panel_id(key));
     };
-    var form = event.target;
+
     $.ajax({
       url:  form.action,
       type: form.method,

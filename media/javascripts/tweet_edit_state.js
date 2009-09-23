@@ -14,6 +14,6 @@ TweetEditState.prototype.is_being_edited = function(key) {
   return this.__being_edited[key] != null;
 }
 
-TweetEditState.prototype.get_editing_panel_id = function(key) {
+TweetEditState.prototype.get_edit_panel_id = function(key) {
   return this.__being_edited[key];
 }
