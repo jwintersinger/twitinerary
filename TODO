@@ -33,3 +33,4 @@ Show Tweets regarding application on homepage -- people who Tweet @account
 Shorten URLs using user's bit.ly account rather than our own
 Prevent user from scheduling more Tweets when too many, rather than notifying after schedule attempt
   Notify user of how many Tweets is too many when refused for excessive activity
+"Rolling Tweets" -- have pool with no specific time, then post them every n minutes during certain time ranges
