@@ -66,7 +66,10 @@ def next_scheduled(request):
     response = {'error': 'Not authenticated.'}
   else:
     tweet = ScheduledTweet.untweeted(user).get()
-    response = {'tweet': tweet.tweet, 'post_at': DateFormat(tweet.post_at).U()}
+    if tweet:
+      response = {'tweet': tweet.tweet, 'post_at': DateFormat(tweet.post_at).U()}
+    else:
+      response = {'error': 'No Tweets scheduled.'}
   return HttpResponse(json.dumps(response), content_type='application/json')
 
 
