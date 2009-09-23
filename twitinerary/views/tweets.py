@@ -56,12 +56,12 @@ def delete(request):
     tweet.delete()
   return HttpResponse('Your Tweet has been deleted.', content_type='text/plain')
 
-def most_recent(request):
+def next_scheduled(request):
   from django.utils import simplejson as json
   # Use same conversion method that Django uses in date:"U" filter.
   from django.utils.dateformat import DateFormat
-  user = request.user
 
+  user = request.user
   if not user.is_authenticated():
     response = {'error': 'Not authenticated.'}
   else:
