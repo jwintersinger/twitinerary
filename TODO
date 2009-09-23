@@ -10,10 +10,9 @@ Indication of how many characters remaining in Tweet
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
 
 Edit support for Tweets:
-  Set time on edit form to whatever Tweet's post_at time is, rather than default time
   Close edit tabs on delete
+Reset URL shortener & image uploader after Tweet submitted (close them if open)
 
-Set default time to (now + 1 hour)
 Add "most recent Tweet" at bottom, along with edit/delete buttons
 Don't allow Tweets posted in past
 Indicate that times are in local timezone
