@@ -28,18 +28,28 @@ indexes:
   - name: tweeted
   - name: created_at
 
-# Used 2 times in query history.
+# Unused in query history -- copied from input.
 - kind: twitinerary_scheduledtweet
   properties:
   - name: tweeted
   - name: post_at
 
-# Used 35 times in query history.
+# Used 1044 times in query history.
 - kind: twitinerary_scheduledtweet
   properties:
   - name: tweeted
   - name: user
   - name: post_at
+    direction: desc
+
+# Used 3 times in query history.
+- kind: twitinerary_scheduledtweet
+  properties:
+  - name: tweeted
+  - name: user
+  - name: post_at
+    direction: desc
+  - name: created_at
     direction: desc
 
 # Unused in query history -- copied from input.

@@ -54,6 +54,7 @@ def view(request):
   tweets.filter('user =', request.user)
   tweets.filter('tweeted =', False)
   tweets.order('-post_at')
+  tweets.order('-created_at')
   return direct_to_template(request, 'view_tweets.html', {'tweets': tweets})
 
 def delete(request):
