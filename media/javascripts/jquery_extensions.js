@@ -39,7 +39,7 @@ $.extend($.ui.tabs.prototype, {
   // with jQuery UI upgrades, as selectors are less likely to change than
   // internal state, given that people theme their interface via selectors.
   get_index: function(selector) {
-    return $.inArray($(selector)[0], $('.ui-tabs-panel'));
+    return $('.ui-tabs-panel').index($(selector));
   },
 
   // Included remove() only works by 
