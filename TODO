@@ -1,8 +1,6 @@
 ==========
 Short term
 ==========
-Add login_required decorator to appropriate views
-  Add post_required decorator as well
 Get Satisfaction support
 Indication of how many characters remaining in Tweet
   Show red when low on characters -- assign different classes

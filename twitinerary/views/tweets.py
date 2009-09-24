@@ -25,6 +25,7 @@ def edit(request):
       {'tweet': ScheduledTweet.get(request.GET.get('key'))})
 
 @login_required()
+@post_required
 def save(request):
   user = request.user
   key = request.POST.get('key')
@@ -51,10 +52,10 @@ def view(request):
   return direct_to_template(request, 'view_tweets.html', {'tweets': tweets})
 
 @login_required()
+@post_required
 def delete(request):
   tweet = _get_untweeted_tweet(request.POST.get('key'), request.user)
-  if request.method == 'POST':
-    tweet.delete()
+  tweet.delete()
   return HttpResponse('Your Tweet has been deleted.', content_type='text/plain')
 
 @login_required('json')

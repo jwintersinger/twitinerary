@@ -32,3 +32,11 @@ def login_required(response_type = 'text'):
   # decorator with empty parentheses to indicate you desire the default
   # response_type.
   return decorate
+
+def post_required(func):
+  def decorated(*args, **kwargs):
+    request = args[0]
+    if request.method != 'POST':
+      return HttpResponse('Request must be POST.', status=405)
+    return func(*args, **kwargs)
+  return decorated
