@@ -34,7 +34,15 @@ indexes:
   - name: tweeted
   - name: post_at
 
-# Used 1044 times in query history.
+# Used 7 times in query history.
+- kind: twitinerary_scheduledtweet
+  properties:
+  - name: tweeted
+  - name: user
+  - name: post_at
+  - name: created_at
+
+# Used 1050 times in query history.
 - kind: twitinerary_scheduledtweet
   properties:
   - name: tweeted
@@ -42,7 +50,7 @@ indexes:
   - name: post_at
     direction: desc
 
-# Used 3 times in query history.
+# Used 143 times in query history.
 - kind: twitinerary_scheduledtweet
   properties:
   - name: tweeted

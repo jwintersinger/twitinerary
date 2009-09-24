@@ -65,7 +65,7 @@ def next_scheduled(request):
   if not user.is_authenticated():
     response = {'error': 'Not authenticated.'}
   else:
-    tweet = ScheduledTweet.untweeted(user).get()
+    tweet = ScheduledTweet.untweeted(user, descending = False).get()
     if tweet:
       response = {'tweet': tweet.tweet, 'post_at': DateFormat(tweet.post_at).U()}
     else:

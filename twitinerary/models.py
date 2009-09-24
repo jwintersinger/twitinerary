@@ -40,10 +40,11 @@ class ScheduledTweet(db.Model):
   tweeted    = db.BooleanProperty(default = False)
 
   @classmethod
-  def untweeted(cls, user):
+  def untweeted(cls, user, descending = True):
     tweets = cls.all()
     tweets.filter('user =', user)
     tweets.filter('tweeted =', False)
-    tweets.order('-post_at')
-    tweets.order('-created_at')
+    direction = descending and '-' or ''
+    tweets.order(direction + 'post_at')
+    tweets.order(direction + 'created_at')
     return tweets
