@@ -3,8 +3,9 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 from google.appengine.ext.db import BadKeyError
+from lib.view_decorators import *
+from lib.http import JsonResponse
 from twitinerary.models import ScheduledTweet, Twitterer
-
 
 #=======
 # Views
@@ -14,18 +15,18 @@ def home(request):
   _indicate_twitter_password_stored(request.user, response)
   return response
 
+@login_required()
 def new(request):
   return direct_to_template(request, 'new_tweet.html')
 
+@login_required()
 def edit(request):
   return direct_to_template(request, 'edit_tweet.html',
       {'tweet': ScheduledTweet.get(request.GET.get('key'))})
 
+@login_required()
 def save(request):
   user = request.user
-  if not user.is_authenticated():
-    return HttpResponse('Not authenticated.', status=401, content_type='text/plain')
-
   key = request.POST.get('key')
   if key:
     tweet = _get_untweeted_tweet(key, user)
@@ -44,33 +45,29 @@ def save(request):
   tweet.put()
   return HttpResponse('Woohoo! Your Tweet has been scheduled.', content_type='text/plain')
 
+@login_required()
 def view(request):
-  if not request.user.is_authenticated():
-    return HttpResponse('Not authenticated.', status=401, content_type='text/plain')
   tweets = ScheduledTweet.untweeted(request.user)
   return direct_to_template(request, 'view_tweets.html', {'tweets': tweets})
 
+@login_required()
 def delete(request):
   tweet = _get_untweeted_tweet(request.POST.get('key'), request.user)
   if request.method == 'POST':
     tweet.delete()
   return HttpResponse('Your Tweet has been deleted.', content_type='text/plain')
 
+@login_required('json')
 def next_scheduled(request):
   from django.utils import simplejson as json
   # Use same conversion method that Django uses in date:"U" filter.
   from django.utils.dateformat import DateFormat
 
-  user = request.user
-  if not user.is_authenticated():
-    response = {'error': 'Not authenticated.'}
+  tweet = ScheduledTweet.untweeted(request.user, descending = False).get()
+  if tweet:
+    return JsonResponse({'tweet': tweet.tweet, 'post_at': DateFormat(tweet.post_at).U()})
   else:
-    tweet = ScheduledTweet.untweeted(user, descending = False).get()
-    if tweet:
-      response = {'tweet': tweet.tweet, 'post_at': DateFormat(tweet.post_at).U()}
-    else:
-      response = {'error': 'No Tweets scheduled.'}
-  return HttpResponse(json.dumps(response), content_type='application/json')
+    return JsonResponse({'error': 'No Tweets scheduled.'})
 
 
 #====================
@@ -100,4 +97,3 @@ def _get_untweeted_tweet(key, user):
   if tweet.tweeted:
     raise Exception('Tweet already Tweeted')
   return tweet
-
