@@ -95,19 +95,17 @@ function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet)
 }
 
 function configure_explanations() {
-  var placeholder = '?';
-  var explanations = $('.explanation');
-
-  explanations.each(function() {
+  $('.explanation').each(function() {
     var e = $(this);
-    e.data('explanation', e.text());
-  });
-  explanations.text(placeholder);
-  explanations.mouseenter(function() {
-    var e = $(this);
-    e.text(e.data('explanation'));
-  });
-  explanations.mouseleave(function() {
-    $(this).text(placeholder);
+    var tooltip_text = e.text();
+    e.text('?');
+    e.simpletip({
+      content: tooltip_text,
+      // When fixed=false, buggy behaviour regarding "flashing" tooltip is exhibited
+      // if mouse is moved rapidly out of tooltip-triggering element.
+      fixed: true,
+      // Default class "active" conflicts with my already-defined class of same name.
+      activeClass: 'active-tooltip'
+    });
   });
 }
