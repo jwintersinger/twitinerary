@@ -44,6 +44,7 @@ function get_tab_name(tab_id) {
 function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet) {
   var tab_name = get_tab_name(ui.tab.id);
   var panel = $(ui.panel);
+  configure_explanations();
 
   var configure_tweet_editor = function() {
     var tweeter = new Tweeter(panel, notifier);
@@ -91,4 +92,22 @@ function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet)
   // hardcoded in my markup.
   if(!tabload_handler) tabload_handler = tabload_handlers.edit_tweet;
   tabload_handler();
+}
+
+function configure_explanations() {
+  var placeholder = '?';
+  var explanations = $('.explanation');
+
+  explanations.each(function() {
+    var e = $(this);
+    e.data('explanation', e.text());
+  });
+  explanations.text(placeholder);
+  explanations.mouseenter(function() {
+    var e = $(this);
+    e.text(e.data('explanation'));
+  });
+  explanations.mouseleave(function() {
+    $(this).text(placeholder);
+  });
 }

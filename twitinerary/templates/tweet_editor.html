@@ -22,6 +22,8 @@
           <option value="pm">p.m.</option>
         </select>
 
+        <span class="explanation">Don't worry about time zones, my friend.</span>
+
         {# post_at calculated dynamically via Javascript prior to form submission. #}
         <input name="post_at" type="hidden" value="{{ tweet.post_at|date:"U" }}" />
       </p>
