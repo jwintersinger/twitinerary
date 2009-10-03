@@ -68,7 +68,9 @@ def next_scheduled(request):
   if tweet:
     return JsonResponse({'tweet': tweet.tweet, 'post_at': DateFormat(tweet.post_at).U()})
   else:
-    return JsonResponse({'error': 'No Tweets scheduled.'})
+    # HTTP status code must currently be 200 -- otherwise, jQuery's getJSON
+    # won't execute my callback, thereby preventing me from handling the error.
+    return JsonResponse({'error_code': 'no_tweets_scheduled', 'error_text': 'No Tweets scheduled.'})
 
 
 #====================

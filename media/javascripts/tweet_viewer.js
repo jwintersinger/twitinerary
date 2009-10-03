@@ -4,6 +4,7 @@ function TweetViewer(tabs, notifier, tweet_edit_state) {
   this.__tweet_edit_state = tweet_edit_state;
   this.__edit_forms = $('.tweet-editor');
   this.__delete_forms = $('.tweet-deleter');
+  this.__delete_callbacks = [];
 
   this.__configure_edit_listeners();
   this.__configure_delete_listeners();
@@ -38,6 +39,8 @@ TweetViewer.prototype.__configure_delete_listeners = function() {
 
       var key = Tweeter.extract_key(form);
       self.__tabs.tabs('remove_by_selector', '#' + self.__tweet_edit_state.get_edit_panel_id(key));
+
+      $.each(self.__delete_callbacks, function() { this(); });
     };
 
     $.ajax({
@@ -49,4 +52,8 @@ TweetViewer.prototype.__configure_delete_listeners = function() {
     });
     return false;
   });
+}
+
+TweetViewer.prototype.add_delete_callback = function(callback) {
+  this.__delete_callbacks.push(callback);
 }

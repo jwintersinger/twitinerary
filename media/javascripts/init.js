@@ -1,7 +1,6 @@
 $(document).ready(function() {
   configure_console();
   handle_tabs_onload();
-  new NextScheduledTweet();
 });
 
 // Add dummy replacement for Firebug's console.log to prevent code that calls it
@@ -14,6 +13,7 @@ function handle_tabs_onload() {
   var notifier = new Notifier('#notifier');
   var tweet_edit_state = new TweetEditState();
   var tabs = $('#tabs');
+  var next_scheduled_tweet = new NextScheduledTweet();
 
   tabs.tabs({
     // Cache contents of tabs so they aren't reloaded when tab is switched to.
@@ -22,7 +22,7 @@ function handle_tabs_onload() {
     // will be performed, too).
     cache: true,
     load: function(event, ui) {
-      return on_tab_load(ui, tabs, notifier, tweet_edit_state);
+      return on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet);
     },
     show: function(event, ui) {
       // "View Tweets" tab must be reloaded to reflect the latest Tweets
@@ -41,7 +41,7 @@ function get_tab_name(tab_id) {
   return tab_id.replace(/_tab$/, '');
 }
 
-function on_tab_load(ui, tabs, notifier, tweet_edit_state) {
+function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet) {
   var tab_name = get_tab_name(ui.tab.id);
   var panel = $(ui.panel);
 
@@ -56,7 +56,10 @@ function on_tab_load(ui, tabs, notifier, tweet_edit_state) {
   var tabload_handlers = {
     new_tweet: function() {
       var tweeter = configure_tweet_editor();
-      tweeter.add_submission_callback(function() { tweeter.reset(); });
+      tweeter.add_submission_callback(function() {
+        tweeter.reset();
+        next_scheduled_tweet.refresh();
+      });
     },
 
     edit_tweet: function() {
@@ -67,13 +70,17 @@ function on_tab_load(ui, tabs, notifier, tweet_edit_state) {
       var editing_complete = function() {
         tabs.tabs('remove', ui.index);
         tweet_edit_state.remove_being_edited(key);
+        next_scheduled_tweet.refresh();
       };
       tweeter.add_submission_callback(editing_complete);
       tweeter.get_tweet_form().find('[name=cancel]').click(editing_complete);
     },
 
     view_tweets: function() {
-      new TweetViewer(tabs, notifier, tweet_edit_state);
+      var tweet_viewer = new TweetViewer(tabs, notifier, tweet_edit_state);
+      tweet_viewer.add_delete_callback(function() {
+        next_scheduled_tweet.refresh();
+      });
       new DatetimeHumanizer();
     }
   };
