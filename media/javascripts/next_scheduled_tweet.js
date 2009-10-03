@@ -15,7 +15,8 @@ NextScheduledTweet.prototype.refresh = function() {
       return;
     }
     data.post_at = new Date(1000*data.post_at);
-    self.__set_text(data.tweet + ' at ' + data.post_at);
+    self.__set_text('Next Tweet: ' + data.tweet + ' in ' +
+      distance_between_times(new Date(), data.post_at) + '.');
   });
 }
 
@@ -41,4 +42,22 @@ NextScheduledTweet.prototype.__set_text = function(new_text) {
   this.__container.fadeTo(speed, 0.01, function() {
     $(this).text(new_text).fadeTo(speed, 1.0);
   });
+}
+
+function distance_between_times(a, b) {
+  var amounts = [
+    ['month',  30*24*60*60],
+    ['week',   7*24*60*60],
+    ['day',    24*60*60],
+    ['hour',   60*60],
+    ['minute', 60],
+    ['second', 1],
+  ];
+  var delta = (b.getTime() - a.getTime()) / 1000; // in seconds.
+  for(var i = 0; i < amounts.length; i++) {
+    var period = amounts[i][0], amount = amounts[i][1];
+    if(amount > Math.abs(delta)) continue;
+    var num_periods = Math.round(delta / amount);
+    return num_periods + ' ' + period + (Math.abs(num_periods) > 1 ? 's' : '');
+  }
 }
