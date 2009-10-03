@@ -23,6 +23,12 @@ Design:
   Determine new name for application
 
 
+================
+Before deploying
+================
+Allow access to / and /media URLs for non-admins
+
+
 =========
 Long term
 =========

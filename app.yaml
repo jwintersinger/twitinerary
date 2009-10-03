@@ -14,6 +14,7 @@ handlers:
 - url: /media
   static_dir: media
   secure: optional
+  login: admin
 
 - url: /cron/.*
   script: common/appenginepatch/main.py
@@ -23,3 +24,4 @@ handlers:
 - url: /.*
   script: common/appenginepatch/main.py
   secure: optional
+  login: admin
