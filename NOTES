@@ -1,0 +1,1 @@
+To run development server: PATH=$PATH:~/.apps/google_appengine/ python2.5 manage.py runserver
