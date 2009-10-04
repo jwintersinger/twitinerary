@@ -13,8 +13,6 @@ function Tweeter(container, notifier) {
   this.__configure_tweet_submission();
   this.__configure_day_choosers();
   this.__initialize_editor();
-
-  this.__tweet_char_counter = new TweetCharCounter(this);
 }
 
 Tweeter.prototype.get_tweet_form = function() {
@@ -49,6 +47,7 @@ Tweeter.prototype.__initialize_editor = function() {
   this.__set_initial_datetime();
   this.__label_date_picker_activator();
   this.get_tweet_input().focus();
+  this.__tweet_char_counter = new TweetCharCounter(this);
 }
 
 // Common references to elements used multiple times.
@@ -209,12 +208,16 @@ function TweetCharCounter(tweeter) {
   this.__max_length = parseInt(this.__char_counter.text(), 10);
 
   var self = this;
-  this.__tweet_input.keyup(function(event) {
-    var tweet_length = self.__tweet_input.val().length;
-    var chars_remaining = self.__max_length - tweet_length;
-    self.__char_counter.text(self.__max_length - tweet_length);
-    self.__change_colour(tweet_length);
-  });
+  // Trigger keyup(), as must __recalculate() on load so that character count
+  // is updated appropriately if editing existing Tweet.
+  this.__tweet_input.keyup(function(event) { self.__recalculate(); }).keyup();
+}
+
+TweetCharCounter.prototype.__recalculate = function() {
+  var tweet_length = this.__tweet_input.val().length;
+  var chars_remaining = this.__max_length - tweet_length;
+  this.__char_counter.text(this.__max_length - tweet_length);
+  this.__change_colour(tweet_length);
 }
 
 TweetCharCounter.prototype.__change_colour = function(tweet_length) {
@@ -228,6 +231,7 @@ TweetCharCounter.prototype.__change_colour = function(tweet_length) {
 TweetCharCounter.prototype.is_tweet_too_long = function() {
   return this.__tweet_input.val().length > this.__max_length;
 }
+
 
 
 

@@ -8,13 +8,14 @@ Better handle multiple notifications in short span of time
 
 Reset URL shortener & image uploader after Tweet submitted (close them if open)
 Add "Tweets sent" counter for each user
-Improve explanations
-  Don't fade out immediately -- allow user time to click on contained link, such as with "use TwitPic directly" link in image uploader password explanation
-  Always position within visible client area -- don't make browser scroll
 Allow user to use his own bit.ly account (for link tracking, etc.)
 
+Improve explanations:
+  Don't fade out immediately -- allow user time to click on contained link, such as with "use TwitPic directly" link in image uploader password explanation
+  Always position within visible client area -- don't make browser scroll
+  Assign width via CSS
+
 Bugs:
-  Time zone explanation does not work if one switches away from and then back to "Schedule new Tweet" tab
   Image uploader doesn't work in IE
 
 OAuth: Add error detection/handling
