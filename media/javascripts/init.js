@@ -112,8 +112,8 @@ function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet)
 function configure_explanations() {
   $('.explanation').each(function() {
     var e = $(this);
-    var tooltip_text = e.text();
+    var tooltip_content = e.html();
     e.text('?');
-    e.moderatelyDampTip({content: tooltip_text});
+    e.moderatelyDampTip({content: tooltip_content});
   });
 }

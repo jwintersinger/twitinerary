@@ -48,6 +48,12 @@
   <form class="twitter-password" style="display: none">
     <input name="password" type="password" />
     <input type="submit" value="Sign in" />
+    <span class="explanation">
+      We need your Twitter password so we can give it to TwitPic. If
+      you do not want us to know your password, you can
+      <a href="http://twitpic.com/" target="_blank">use TwitPic directly</a>,
+      then copy and paste your image URLs into us.
+    </span>
   </form>
 
   <form class="image-uploader" action="{% url twitinerary.views.image_uploader.upload_image %}"
