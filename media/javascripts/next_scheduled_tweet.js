@@ -53,7 +53,6 @@ function distance_between_times(a, b) {
     ['minute', 60],
     ['second', 1],
   ];
-  a.setTime(b.getTime() - 400);
   var delta = (b.getTime() - a.getTime()) / 1000; // in seconds.
   for(var i = 0; i < amounts.length; i++) {
     var period = amounts[i][0], amount = amounts[i][1];
