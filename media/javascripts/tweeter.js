@@ -85,8 +85,13 @@ Tweeter.prototype.__configure_tweet_submission = function() {
   var self = this;
   this.__el.tweet_form.submit(function() {
     self.__package_time_into_form();
+
     if(self.__post_at < new Date()) {
       self.__notifier.notify_failure('Your Tweet is scheduled in the past.');
+      return false;
+    }
+    if(self.__tweet_char_counter.is_tweet_too_long()) {
+      self.__notifier.notify_failure('Your Tweet is too long.');
       return false;
     }
 
@@ -218,6 +223,10 @@ TweetCharCounter.prototype.__change_colour = function(tweet_length) {
   if(red > max) red = max;
 
   this.__char_counter.css('color', '#' + Math.round(red).toString(16) + '0000');
+}
+
+TweetCharCounter.prototype.is_tweet_too_long = function() {
+  return this.__tweet_input.val().length > this.__max_length;
 }
 
 
