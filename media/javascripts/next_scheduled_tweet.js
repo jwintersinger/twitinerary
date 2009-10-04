@@ -57,7 +57,7 @@ NextScheduledTweet.prototype.__clear = function() {
 }
 
 NextScheduledTweet.prototype.__humanize_time_until_next_tweet = function() {
-  var time_container = this.__container.find('.next-tweet-datetime');
+  var time_container = this.__container.find('.datetime');
   var next_tweet_time = new Date(1000*parseInt(time_container.text(), 10));
   time_container.text(distance_between_times(new Date(), next_tweet_time));
 }

@@ -64,6 +64,7 @@ function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet)
   var tab_name = get_tab_name(ui.tab.id);
   var panel = $(ui.panel);
   configure_explanations();
+  new DatetimeHumanizer();
 
   var configure_tweet_editor = function() {
     var tweeter = new Tweeter(panel, notifier);
@@ -96,9 +97,8 @@ function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet)
       tweeter.get_tweet_form().find('[name=cancel]').click(editing_complete);
     },
 
-    view_tweets: function() {
-      new DatetimeHumanizer();
-    }
+    // Must not omit, or edit_tweet will be used by default.
+    view_tweets: function() { }
   };
 
   var tabload_handler = tabload_handlers[tab_name];
