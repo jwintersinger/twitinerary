@@ -9,9 +9,13 @@ Fix notifier so that it is positioned from top of viewport -- right now, when do
 Better handle multiple notifications in short span of time
 
 Reset URL shortener & image uploader after Tweet submitted (close them if open)
-
-Make image uploader work in IE
 Add "Tweets sent" counter for each user
+Add explanation of why we need Twitter password for image uploader
+Allow user to use his own bit.ly account (for link tracking, etc.)
+
+Bugs:
+  Time zone explanation does not work if one switches away from and then back to "Schedule new Tweet" tab
+  Image uploader doesn't work in IE
 
 OAuth: Add error detection/handling
 Design:

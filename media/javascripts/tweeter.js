@@ -13,6 +13,8 @@ function Tweeter(container, notifier) {
   this.__configure_tweet_submission();
   this.__configure_day_choosers();
   this.__initialize_editor();
+
+  this.__tweet_char_counter = new TweetCharCounter(this);
 }
 
 Tweeter.prototype.get_tweet_form = function() {
@@ -192,6 +194,30 @@ Tweeter.prototype.__update_time = function() {
 
 Tweeter.prototype.__indicate_active_day_chooser = function(name) {
   this.__day_choosers.removeClass('active').filter('[name=' + name + ']').addClass('active');
+}
+
+
+
+function TweetCharCounter(tweeter) {
+  this.__char_counter = tweeter.get_tweet_form().find('.tweet-char-counter');
+  this.__tweet_input = tweeter.get_tweet_input();
+  this.__max_length = parseInt(this.__char_counter.text(), 10);
+
+  var self = this;
+  this.__tweet_input.keyup(function(event) {
+    var tweet_length = self.__tweet_input.val().length;
+    var chars_remaining = self.__max_length - tweet_length;
+    self.__char_counter.text(self.__max_length - tweet_length);
+    self.__change_colour(tweet_length);
+  });
+}
+
+TweetCharCounter.prototype.__change_colour = function(tweet_length) {
+  var max = 255;
+  var red = max*(tweet_length / this.__max_length);
+  if(red > max) red = max;
+
+  this.__char_counter.css('color', '#' + Math.round(red).toString(16) + '0000');
 }
 
 
