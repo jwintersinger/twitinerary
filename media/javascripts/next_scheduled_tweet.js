@@ -38,7 +38,9 @@ NextScheduledTweet.prototype.__set_content = function(new_content) {
     return;
   }
 
-  var speed = 1000;
+  var fade_in_speed = 1000;
+  // Set to 0 for instantaneous "fade out" when existing contents are empty.
+  var fade_out_speed = this.__container.html() == '' ? 0 : fade_in_speed;
   // Fade to 1% opacity rather than fade out completely, as, if the container is
   // empty, jQuery will detect that nothing in it is visible on the page and
   // thus not fade it out. Since it is never faded out, the fade-in call
@@ -46,9 +48,9 @@ NextScheduledTweet.prototype.__set_content = function(new_content) {
   // the container starts empty (i.e., no Tweets are scheduled) and then has its
   // text changed (i.e., a Tweet is scheduled), that Tweet will appear instantly
   // rather than fading in.
-  this.__container.fadeTo(speed, 0.01, function() {
+  this.__container.fadeTo(fade_out_speed, 0.01, function() {
     update_content(new_content);
-    $(this).fadeTo(speed, 1.0);
+    $(this).fadeTo(fade_in_speed, 1.0);
   });
 }
 

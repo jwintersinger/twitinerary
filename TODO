@@ -10,10 +10,7 @@ Better handle multiple notifications in short span of time
 
 Reset URL shortener & image uploader after Tweet submitted (close them if open)
 
-Add "most recent Tweet" at bottom, along with edit/delete buttons
 Don't allow Tweets posted in past
-Indicate that times are in local timezone
-  Use little question mark that, when hovered, displays explanation
 Make image uploader work in IE
 Add "Tweets sent" counter for each user
 
