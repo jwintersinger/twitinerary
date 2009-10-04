@@ -53,11 +53,14 @@ function distance_between_times(a, b) {
     ['minute', 60],
     ['second', 1],
   ];
+  a.setTime(b.getTime() - 400);
   var delta = (b.getTime() - a.getTime()) / 1000; // in seconds.
   for(var i = 0; i < amounts.length; i++) {
     var period = amounts[i][0], amount = amounts[i][1];
-    if(amount > Math.abs(delta)) continue;
+    // If on last period (seconds), define time in it -- otherwise will fall out
+    // of loop without defining time.
+    if(amount > Math.abs(delta) && i != amounts.length - 1) continue;
     var num_periods = Math.round(delta / amount);
-    return num_periods + ' ' + period + (Math.abs(num_periods) > 1 ? 's' : '');
+    return num_periods + ' ' + period + (Math.abs(num_periods) != 1 ? 's' : '');
   }
 }
