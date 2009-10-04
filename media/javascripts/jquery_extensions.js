@@ -59,3 +59,21 @@ $.extend($.ui.tabs.prototype, {
     this.load(index);
   }
 });
+
+// Exceedingly simple tooltip. The previously-used Simpletip did not work if one
+// switched away from its containing tab, then back to that tab -- in such an
+// instance, the tooltip stopped functioning.
+jQuery.fn.moderatelyDampTip = function(options) {
+  if(!options.className) options.className = 'tooltip';
+  if(!options.content)   options.content = 'I am moderately damp.';
+
+  this.after('<p class="' + options.className + '">' + options.content + '</p>');
+  var tooltip = this.next('.' + options.className);
+
+  this.hover(function(event) {
+    tooltip.css({left: event.pageX, top: event.pageY});
+    tooltip.fadeIn();
+  }, function() {
+    tooltip.fadeOut();
+  });
+}
