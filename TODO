@@ -10,7 +10,6 @@ Better handle multiple notifications in short span of time
 
 Reset URL shortener & image uploader after Tweet submitted (close them if open)
 
-Don't allow Tweets posted in past
 Make image uploader work in IE
 Add "Tweets sent" counter for each user
 

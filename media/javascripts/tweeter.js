@@ -83,6 +83,10 @@ Tweeter.prototype.__configure_tweet_submission = function() {
   var self = this;
   this.__el.tweet_form.submit(function() {
     self.__package_time_into_form();
+    if(self.__post_at < new Date()) {
+      self.__notifier.notify_failure('Your Tweet is scheduled in the past.');
+      return false;
+    }
 
     $.ajax({url: self.__el.tweet_form[0].action,
             type: self.__el.tweet_form[0].method,
