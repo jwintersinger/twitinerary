@@ -9,11 +9,30 @@ function configure_console() {
   if(!window.console) window.console = { log: function() { } };
 }
 
+function configure_tweet_manipulators(tabs, notifier, tweet_edit_state, next_scheduled_tweet) {
+  var tweet_manipulator = new TweetManipulator(tabs, notifier, tweet_edit_state);
+
+  $('.tweet-editor').live('submit', function(event) {
+    return tweet_manipulator.on_init_edit(event.target);
+  });
+  $('.tweet-deleter').live('submit', function(event) {
+    return tweet_manipulator.on_delete(event.target);
+  });
+  tweet_manipulator.add_delete_callback(function() {
+    // Reload "View Tweets" tab when Tweet deleted; note that this is not
+    // necessary when tab is not selected, for it will be automatically
+    // reloaded when it is switched to.
+    tabs.tabs('reload_if_selected', '#View_Tweets');
+    next_scheduled_tweet.refresh();
+  });
+}
+
 function handle_tabs_onload() {
   var notifier = new Notifier('#notifier');
   var tweet_edit_state = new TweetEditState();
   var tabs = $('#tabs');
   var next_scheduled_tweet = new NextScheduledTweet();
+  configure_tweet_manipulators(tabs, notifier, tweet_edit_state, next_scheduled_tweet);
 
   tabs.tabs({
     // Cache contents of tabs so they aren't reloaded when tab is switched to.
@@ -78,10 +97,6 @@ function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet)
     },
 
     view_tweets: function() {
-      var tweet_viewer = new TweetViewer(tabs, notifier, tweet_edit_state);
-      tweet_viewer.add_delete_callback(function() {
-        next_scheduled_tweet.refresh();
-      });
       new DatetimeHumanizer();
     }
   };

@@ -60,13 +60,14 @@ def delete(request):
 
 @login_required('json')
 def next_scheduled(request):
-  from django.utils import simplejson as json
-  # Use same conversion method that Django uses in date:"U" filter.
-  from django.utils.dateformat import DateFormat
+  from django.template import Context
+  from django.template.loader import get_template
 
   tweet = ScheduledTweet.untweeted(request.user, descending = False).get()
   if tweet:
-    return JsonResponse({'tweet': tweet.tweet, 'post_at': DateFormat(tweet.post_at).U()})
+    template = get_template('_next_scheduled_tweet.html')
+    content = template.render(Context({'tweet': tweet}))
+    return JsonResponse({'content': content})
   else:
     # HTTP status code must currently be 200 -- otherwise, jQuery's getJSON
     # won't execute my callback, thereby preventing me from handling the error.

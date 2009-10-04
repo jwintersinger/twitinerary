@@ -22,8 +22,7 @@
           <option value="pm">p.m.</option>
         </select>
 
-        <span class="explanation">All times are in your local time, so don't worry
-        about time zones.</span>
+        <span class="explanation">All times are local time, so don't worry about time zones.</span>
 
         {# post_at calculated dynamically via Javascript prior to form submission. #}
         <input name="post_at" type="hidden" value="{{ tweet.post_at|date:"U" }}" />

@@ -1,0 +1,8 @@
+<form class="tweet-editor" action="{% url twitinerary.views.tweets.edit %}" method="get">
+  <input name="key" type="hidden" value="{{ tweet.key }}" />
+  <input type="submit" value="Edit" />
+</form>
+<form class="tweet-deleter" action="{% url twitinerary.views.tweets.delete %}" method="post">
+  <input name="key" type="hidden" value="{{ tweet.key }}" />
+  <input type="submit" value="Delete" />
+</form>

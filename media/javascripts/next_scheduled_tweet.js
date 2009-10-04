@@ -11,22 +11,29 @@ NextScheduledTweet.prototype.refresh = function() {
   var self = this;
   $.getJSON('/tweets/next_scheduled/', function(data) {
     if(data.error_code) {
-      if(data.error_code == 'no_tweets_scheduled') self.__set_text('');
+      if(data.error_code == 'no_tweets_scheduled') self.__clear();
       return;
     }
-    data.post_at = new Date(1000*data.post_at);
-    self.__set_text('Next Tweet: ' + data.tweet + ' in ' +
-      distance_between_times(new Date(), data.post_at) + '.');
+    self.__set_content(data.content);
   });
 }
 
-NextScheduledTweet.prototype.__set_text = function(new_text) {
+NextScheduledTweet.prototype.__set_content = function(new_content) {
   // Only change text if text is different from existing.
-  if(this.__container.text() == new_text) return;
+  if(this.__container.data('content_before_date_humanization') == new_content) return;
+
+  var self = this;
+  var update_content = function(content) {
+    self.__container.html(content);
+    // Necessary for "only change if text different" check to work, as we alter
+    // the HTML in transforming the date.
+    self.__container.data('content_before_date_humanization', content);
+    self.__humanize_time_until_next_tweet();
+  };
 
   // Skip all fading animations on first load.
   if(this.__initial_load) {
-    this.__container.text(new_text);
+    update_content(new_content);
     this.__initial_load = false;
     return;
   }
@@ -40,9 +47,21 @@ NextScheduledTweet.prototype.__set_text = function(new_text) {
   // text changed (i.e., a Tweet is scheduled), that Tweet will appear instantly
   // rather than fading in.
   this.__container.fadeTo(speed, 0.01, function() {
-    $(this).text(new_text).fadeTo(speed, 1.0);
+    update_content(new_content);
+    $(this).fadeTo(speed, 1.0);
   });
 }
+
+NextScheduledTweet.prototype.__clear = function() {
+  this.__set_content('');
+}
+
+NextScheduledTweet.prototype.__humanize_time_until_next_tweet = function() {
+  var time_container = this.__container.find('.next-tweet-datetime');
+  var next_tweet_time = new Date(1000*parseInt(time_container.text(), 10));
+  time_container.text(distance_between_times(new Date(), next_tweet_time));
+}
+
 
 function distance_between_times(a, b) {
   var amounts = [

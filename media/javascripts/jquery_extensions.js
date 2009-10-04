@@ -38,13 +38,24 @@ $.extend($.ui.tabs.prototype, {
   // object to find tabs is something of a hack, but it is less likely to break
   // with jQuery UI upgrades, as selectors are less likely to change than
   // internal state, given that people theme their interface via selectors.
-  get_index: function(selector) {
+  _get_index: function(selector) {
+    // If I call from one of the below functions, return value is as expected.
+    // If I call from external code, return value is always the value of
+    // tabs.tabs(). As such, if I ever make this method public rather than
+    // private, I must resolve this.
     return $('.ui-tabs-panel').index($(selector));
   },
 
   // Included remove() only works by 
   remove_by_selector: function(selector) {
-    var index = this.get_index(selector);
+    var index = this._get_index(selector);
     if(index != -1) return this.remove(index);
+  },
+
+  reload_if_selected: function(selector) {
+    var index = this._get_index(selector);
+    // Do nothing unless target tab is currently selected.
+    if(this.option('selected') != index) return;
+    this.load(index);
   }
 });
