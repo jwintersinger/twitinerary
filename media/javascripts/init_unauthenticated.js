@@ -5,7 +5,7 @@ $(document).ready(function() {
 
     for(var i = 0; i < num_tweets; i++) {
       var tweet = data.results[i];
-      container.append('<li><a href="http://twitter.com/' + tweet.from_user +
+      container.append('<li><a href="http://twitter.com/"' + tweet.from_user +
         '>@' + tweet.from_user + '</a>: ' + tweet.text + ' at ' + tweet.created_at + '</li>');
     }
   });
