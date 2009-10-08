@@ -46,12 +46,13 @@ $.extend($.ui.tabs.prototype, {
     return $('.ui-tabs-panel').index($(selector));
   },
 
-  // Included remove() only works by 
+  // Included remove() only works by index.
   remove_by_selector: function(selector) {
     var index = this._get_index(selector);
     if(index != -1) return this.remove(index);
   },
 
+  // Refresh a tab if it is the currently-selected tab.
   reload_if_selected: function(selector) {
     var index = this._get_index(selector);
     // Do nothing unless target tab is currently selected.

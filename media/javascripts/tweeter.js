@@ -203,9 +203,16 @@ Tweeter.prototype.__indicate_active_day_chooser = function(name) {
 
 
 function TweetCharCounter(tweeter) {
+  this.__max_length = 140;
   this.__char_counter = tweeter.get_tweet_form().find('.tweet-char-counter');
   this.__tweet_input = tweeter.get_tweet_input();
-  this.__max_length = parseInt(this.__char_counter.text(), 10);
+
+  this.__reset();
+}
+
+TweetCharCounter.prototype.__reset = function() {
+  this.__char_counter.text(this.__max_length);
+  this.__char_counter.css('color', '#000');
 
   var self = this;
   // Trigger keyup(), as must __recalculate() on load so that character count
