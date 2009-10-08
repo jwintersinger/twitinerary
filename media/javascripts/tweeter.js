@@ -13,6 +13,7 @@ function Tweeter(container, notifier) {
   this.__configure_tweet_submission();
   this.__configure_day_choosers();
   this.__initialize_editor();
+  this.__tweet_char_counter = new TweetCharCounter(this);
 }
 
 Tweeter.prototype.get_tweet_form = function() {
@@ -41,13 +42,13 @@ Tweeter.prototype.reset = function() {
   // reset() call does not reset hidden fields, so must do so manually.
   this.__el.post_at.val('');
   this.__initialize_editor();
+  this.__tweet_char_counter.reset();
 }
 
 Tweeter.prototype.__initialize_editor = function() {
   this.__set_initial_datetime();
   this.__label_date_picker_activator();
   this.get_tweet_input().focus();
-  this.__tweet_char_counter = new TweetCharCounter(this);
 }
 
 // Common references to elements used multiple times.
@@ -203,21 +204,21 @@ Tweeter.prototype.__indicate_active_day_chooser = function(name) {
 
 
 function TweetCharCounter(tweeter) {
-  this.__max_length = 140;
   this.__char_counter = tweeter.get_tweet_form().find('.tweet-char-counter');
   this.__tweet_input = tweeter.get_tweet_input();
+  this.__max_length = 140;
+  this.__default_colour = this.__char_counter.css('color');
 
-  this.__reset();
-}
-
-TweetCharCounter.prototype.__reset = function() {
-  this.__char_counter.text(this.__max_length);
-  this.__char_counter.css('color', '#000');
-
+  this.reset();
   var self = this;
   // Trigger keyup(), as must __recalculate() on load so that character count
   // is updated appropriately if editing existing Tweet.
   this.__tweet_input.keyup(function(event) { self.__recalculate(); }).keyup();
+}
+
+TweetCharCounter.prototype.reset = function() {
+  this.__char_counter.text(this.__max_length);
+  this.__char_counter.css('color', this.__default_colour);
 }
 
 TweetCharCounter.prototype.__recalculate = function() {
