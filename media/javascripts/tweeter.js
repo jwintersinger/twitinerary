@@ -208,12 +208,16 @@ function TweetCharCounter(tweeter) {
   this.__tweet_input = tweeter.get_tweet_input();
   this.__max_length = 140;
   this.__default_colour = this.__char_counter.css('color');
-
   this.reset();
+
   var self = this;
-  // Trigger keyup(), as must __recalculate() on load so that character count
-  // is updated appropriately if editing existing Tweet.
-  this.__tweet_input.keyup(function(event) { self.__recalculate(); }).keyup();
+  var handler = function(event) { self.__recalculate(); };
+  // Bind to change as well as keyup, as change signal will be sent when URL
+  // shortener or image uploader alters Tweet contents.
+  this.__tweet_input.keyup(handler).change(handler);
+  // Force recalculation so that character count is properly updated when
+  // editing existing Tweet.
+  handler();
 }
 
 TweetCharCounter.prototype.reset = function() {

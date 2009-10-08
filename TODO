@@ -2,6 +2,7 @@
 Short term
 ==========
 Get Satisfaction support
+Add "Tweets sent about app" to unauthenticated homepage
 
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
 Better handle multiple notifications in short span of time
@@ -10,6 +11,13 @@ Reset URL shortener & image uploader after Tweet submitted (close them if open)
 Add "Tweets sent" counter for each user
 Allow user to use his own bit.ly account (for link tracking, etc.)
 
+Provide better indication of when last Tweet scheduled -- Alex schedules one, forgets when, doesn't know when to schedule next
+  Solutions:
+    Perhaps issue will go away when design implemented, for "next scheduled Tweet" will be much more prominent
+    Rolling Tweets?
+    Display multiple Tweets in "next scheduled Tweet"
+    Move away from tab-based interface entirely -- perhaps scheduled Tweets should be visible at same time as "Schedule new Tweet"
+    
 Improve explanations:
   Don't fade out immediately -- allow user time to click on contained link, such as with "use TwitPic directly" link in image uploader password explanation
   Always position within visible client area -- don't make browser scroll

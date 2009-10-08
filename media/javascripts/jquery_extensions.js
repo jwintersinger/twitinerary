@@ -31,6 +31,7 @@ jQuery.fn.insertAtCaret = function(str) {
   } else {
     self.value += str;
   }
+  this.change(); // Send signal so that client code may detect that contents have changed.
 };
 
 $.extend($.ui.tabs.prototype, {
