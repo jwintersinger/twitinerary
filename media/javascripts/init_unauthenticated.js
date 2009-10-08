@@ -1,6 +1,5 @@
 $(document).ready(function() {
   new TweetsAbout('bonner', function(data) {
-    console.log(data);
     var num_tweets = 3;
     var container = $('#tweets-about-us');
 
