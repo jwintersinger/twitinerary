@@ -2,7 +2,9 @@
 Short term
 ==========
 Get Satisfaction support
-Add "Tweets sent about app" to unauthenticated homepage
+Migrate "Tweets about us" to backend (in memcache) -- better for SEO, since page will be changing
+Store user object, other common datastore stuff in memcache
+  Maybe just store user in session, which I believe is memcache-based
 
 Fix notifier so that it is positioned from top of viewport -- right now, when document scrolled down, notifier may be missed as it always appears at top of document
 Better handle multiple notifications in short span of time
@@ -18,6 +20,8 @@ Provide better indication of when last Tweet scheduled -- Alex schedules one, fo
     Display multiple Tweets in "next scheduled Tweet"
     Move away from tab-based interface entirely -- perhaps scheduled Tweets should be visible at same time as "Schedule new Tweet"
     
+Turn tags blue -- "#tweets"
+
 Improve explanations:
   Don't fade out immediately -- allow user time to click on contained link, such as with "use TwitPic directly" link in image uploader password explanation
   Always position within visible client area -- don't make browser scroll
@@ -31,6 +35,7 @@ Design:
   Finish all prose, other writing for app so that Alex may design to it
   Determine new name for application
   Favicon
+  Bigger Tweet box -- too small in comparison with text
 
 
 ================
@@ -48,3 +53,4 @@ Shorten URLs using user's bit.ly account rather than our own
 Prevent user from scheduling more Tweets when too many, rather than notifying after schedule attempt
   Notify user of how many Tweets is too many when refused for excessive activity
 "Rolling Tweets" -- have pool with no specific time, then post them every n minutes during certain time ranges
+Go through Twitter app review process to increase API limits
