@@ -91,7 +91,7 @@ def _indicate_twitter_password_stored(user, response):
 def _too_many_tweets_sent(user):
   tweets = ScheduledTweet.all()
   tweets.filter('user =', user)
-  return tweets.count() >= 5
+  return tweets.count() >= 50
 
 # Ensures Tweet belogns to given user and that it has not already been Tweeted.
 def _get_untweeted_tweet(key, user):
