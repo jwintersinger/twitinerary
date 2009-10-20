@@ -1,6 +1,6 @@
 $(document).ready(function() {
   configure_console();
-  handle_tabs_onload();
+  new Initiator();
 });
 
 // Add dummy replacement for Firebug's console.log to prevent code that calls it
@@ -9,7 +9,18 @@ function configure_console() {
   if(!window.console) window.console = { log: function() { } };
 }
 
-function configure_tweet_manipulators(tabs, notifier, tweet_edit_state, next_scheduled_tweet) {
+function Initiator() {
+  var notifier = new Notifier('#notifier');
+  var tweet_edit_state = new TweetEditState();
+  var next_scheduled_tweet = new NextScheduledTweet();
+
+  var tabs = this.__create_tabs(notifier, tweet_edit_state, next_scheduled_tweet);
+  this.__configure_tweet_manipulators(tabs, notifier, tweet_edit_state, next_scheduled_tweet);
+}
+
+// Configure 'edit' and 'delete' manipulators. Such are present on the "View Tweets" tab and on the
+// "next scheduled Tweet" widget that is globally present.
+Initiator.prototype.__configure_tweet_manipulators = function(tabs, notifier, tweet_edit_state, next_scheduled_tweet) {
   var tweet_manipulator = new TweetManipulator(tabs, notifier, tweet_edit_state);
 
   $('.tweet-editor').live('submit', function(event) {
@@ -18,6 +29,7 @@ function configure_tweet_manipulators(tabs, notifier, tweet_edit_state, next_sch
   $('.tweet-deleter').live('submit', function(event) {
     return tweet_manipulator.on_delete(event.target);
   });
+  // Refresh occurs on 'new' & 'edit' Tweet states in respective submit handlers.
   tweet_manipulator.add_delete_callback(function() {
     // Reload "View Tweets" tab when Tweet deleted; note that this is not
     // necessary when tab is not selected, for it will be automatically
@@ -27,13 +39,9 @@ function configure_tweet_manipulators(tabs, notifier, tweet_edit_state, next_sch
   });
 }
 
-function handle_tabs_onload() {
-  var notifier = new Notifier('#notifier');
-  var tweet_edit_state = new TweetEditState();
+Initiator.prototype.__create_tabs = function(notifier, tweet_edit_state, next_scheduled_tweet) {
   var tabs = $('#tabs');
-  var next_scheduled_tweet = new NextScheduledTweet();
-  configure_tweet_manipulators(tabs, notifier, tweet_edit_state, next_scheduled_tweet);
-
+  var self = this;
   tabs.tabs({
     // Cache contents of tabs so they aren't reloaded when tab is switched to.
     // Otherwise, contents of forms will be lost when switching away from and
@@ -41,29 +49,36 @@ function handle_tabs_onload() {
     // will be performed, too).
     cache: true,
     load: function(event, ui) {
-      return on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet);
+      return self.__on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet);
     },
     show: function(event, ui) {
-      // "View Tweets" tab must be reloaded to reflect the latest Tweets
-      // added, edited, or deleted -- don't want its contents cached.
-      // TODO: when first loaded and contents aren't already cached, tab is
-      // loaded twice.
-      if(get_tab_name(ui.tab.id) == 'view_tweets')
-        tabs.tabs('load', tabs.tabs('option', 'selected'));
+      return self.__on_tab_show(ui, tabs);
     }
   });
   // Allow tabs to be dragged and dropped.
   tabs.find('.ui-tabs-nav').sortable({axis: 'x'});
+  return tabs;
 }
 
-function get_tab_name(tab_id) {
+Initiator.prototype.__get_tab_name = function(tab_id) {
   return tab_id.replace(/_tab$/, '');
 }
 
-function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet) {
-  var tab_name = get_tab_name(ui.tab.id);
+Initiator.prototype.__on_tab_show = function(ui, tabs) {
+  // "View Tweets" tab must be reloaded to reflect the latest Tweets
+  // added, edited, or deleted -- don't want its contents cached.
+  // TODO: when first loaded and contents aren't already cached, tab is
+  // loaded twice.
+  if(this.__get_tab_name(ui.tab.id) == 'view_tweets')
+    tabs.tabs('load', tabs.tabs('option', 'selected'));
+}
+
+Initiator.prototype.__on_tab_load = function(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet) {
+  var tab_name = this.__get_tab_name(ui.tab.id);
   var panel = $(ui.panel);
-  configure_explanations();
+
+  // Do following for every tab.
+  this.__configure_explanations();
   new DatetimeHumanizer();
 
   var configure_tweet_editor = function() {
@@ -97,19 +112,19 @@ function on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet)
       tweeter.get_tweet_form().find('[name=cancel]').click(editing_complete);
     },
 
-    // Must not omit, or edit_tweet will be used by default.
+    // Must specify handler or edit_tweet will be used by default.
     view_tweets: function() { }
   };
 
-  var tabload_handler = tabload_handlers[tab_name];
   // If tab has no ID associated with it, it must be an edit tab, since edit
   // tabs and panels are created dynamically by jQuery UI, rather than being
   // hardcoded in my markup.
-  if(!tabload_handler) tabload_handler = tabload_handlers.edit_tweet;
-  tabload_handler();
+  tabload_handlers.default = tabload_handlers.edit_tweet;
+
+  (tabload_handlers[tab_name] || tabload_handlers.default)();
 }
 
-function configure_explanations() {
+Initiator.prototype.__configure_explanations = function() {
   $('.explanation').each(function() {
     var e = $(this);
     var tooltip_content = e.html();
