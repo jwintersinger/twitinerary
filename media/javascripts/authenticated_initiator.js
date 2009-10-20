@@ -1,6 +1,5 @@
 function AuthenticatedInitiator(initiator) {
   this.__initiator = initiator;
-  this.__notifier = new Notifier('#notifier');
   this.__tweet_edit_state = new TweetEditState();
   this.__next_scheduled_tweet = new NextScheduledTweet();
 
@@ -11,7 +10,7 @@ function AuthenticatedInitiator(initiator) {
 // Configure 'edit' and 'delete' manipulators. Such are present on the "View Tweets" tab and on the
 // "next scheduled Tweet" widget that is globally present.
 AuthenticatedInitiator.prototype.__configure_tweet_manipulators = function() {
-  var tweet_manipulator = new TweetManipulator(this.__tabs, this.__notifier, this.__tweet_edit_state);
+  var tweet_manipulator = new TweetManipulator(this.__tabs, this.__initiator.notifier, this.__tweet_edit_state);
 
   $('.tweet-editor').live('submit', function(event) {
     return tweet_manipulator.on_init_edit(event.target);
@@ -71,10 +70,10 @@ AuthenticatedInitiator.prototype.__on_tab_load = function(ui) {
   var self = this;
 
   var configure_tweet_editor = function() {
-    var tweeter = new Tweeter(panel, self.__notifier);
+    var tweeter = new Tweeter(panel, self.__initiator.notifier);
     var tweet_input = tweeter.get_tweet_input();
-    new UrlShortener(panel, tweet_input, self.__notifier);
-    new ImageUploader(panel, tweet_input, self.__notifier);
+    new UrlShortener(panel, tweet_input, self.__initiator.notifier);
+    new ImageUploader(panel, tweet_input, self.__initiator.notifier);
     return tweeter;
   };
 

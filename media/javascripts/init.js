@@ -3,6 +3,7 @@ $(document).ready(function() {
 });
 
 function Initiator() {
+  this.notifier = new Notifier('#notifier');
   this.__configure_console();
 
   if($('#authenticator').hasClass('authenticated')) new AuthenticatedInitiator(this);
