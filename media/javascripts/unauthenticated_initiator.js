@@ -1,4 +1,4 @@
-$(document).ready(function() {
+function UnauthenticatedInitiator(initiator) {
   new TweetsAbout('bonner', function(data) {
     var num_tweets = 3;
     var container = $('#tweets-about-us');
@@ -9,4 +9,6 @@ $(document).ready(function() {
         '>@' + tweet.from_user + '</a>: ' + tweet.text + ' at ' + tweet.created_at + '</li>');
     }
   });
-});
+  initiator.on_tab_load();
+}
+

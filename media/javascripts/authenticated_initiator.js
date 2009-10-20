@@ -1,27 +1,17 @@
-$(document).ready(function() {
-  configure_console();
-  new Initiator();
-});
+function AuthenticatedInitiator(initiator) {
+  this.__initiator = initiator;
+  this.__notifier = new Notifier('#notifier');
+  this.__tweet_edit_state = new TweetEditState();
+  this.__next_scheduled_tweet = new NextScheduledTweet();
 
-// Add dummy replacement for Firebug's console.log to prevent code that calls it
-// from throwing an exception.
-function configure_console() {
-  if(!window.console) window.console = { log: function() { } };
-}
-
-function Initiator() {
-  var notifier = new Notifier('#notifier');
-  var tweet_edit_state = new TweetEditState();
-  var next_scheduled_tweet = new NextScheduledTweet();
-
-  var tabs = this.__create_tabs(notifier, tweet_edit_state, next_scheduled_tweet);
-  this.__configure_tweet_manipulators(tabs, notifier, tweet_edit_state, next_scheduled_tweet);
+  this.__tabs = this.__create_tabs();
+  this.__configure_tweet_manipulators();
 }
 
 // Configure 'edit' and 'delete' manipulators. Such are present on the "View Tweets" tab and on the
 // "next scheduled Tweet" widget that is globally present.
-Initiator.prototype.__configure_tweet_manipulators = function(tabs, notifier, tweet_edit_state, next_scheduled_tweet) {
-  var tweet_manipulator = new TweetManipulator(tabs, notifier, tweet_edit_state);
+AuthenticatedInitiator.prototype.__configure_tweet_manipulators = function() {
+  var tweet_manipulator = new TweetManipulator(this.__tabs, this.__notifier, this.__tweet_edit_state);
 
   $('.tweet-editor').live('submit', function(event) {
     return tweet_manipulator.on_init_edit(event.target);
@@ -29,17 +19,19 @@ Initiator.prototype.__configure_tweet_manipulators = function(tabs, notifier, tw
   $('.tweet-deleter').live('submit', function(event) {
     return tweet_manipulator.on_delete(event.target);
   });
+
+  var self = this;
   // Refresh occurs on 'new' & 'edit' Tweet states in respective submit handlers.
   tweet_manipulator.add_delete_callback(function() {
     // Reload "View Tweets" tab when Tweet deleted; note that this is not
     // necessary when tab is not selected, for it will be automatically
     // reloaded when it is switched to.
-    tabs.tabs('reload_if_selected', '#View_Tweets');
-    next_scheduled_tweet.refresh();
+    self.__tabs.tabs('reload_if_selected', '#View_Tweets');
+    self.__next_scheduled_tweet.refresh();
   });
 }
 
-Initiator.prototype.__create_tabs = function(notifier, tweet_edit_state, next_scheduled_tweet) {
+AuthenticatedInitiator.prototype.__create_tabs = function() {
   var tabs = $('#tabs');
   var self = this;
   tabs.tabs({
@@ -49,7 +41,7 @@ Initiator.prototype.__create_tabs = function(notifier, tweet_edit_state, next_sc
     // will be performed, too).
     cache: true,
     load: function(event, ui) {
-      return self.__on_tab_load(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet);
+      return self.__on_tab_load(ui, tabs);
     },
     show: function(event, ui) {
       return self.__on_tab_show(ui, tabs);
@@ -60,32 +52,29 @@ Initiator.prototype.__create_tabs = function(notifier, tweet_edit_state, next_sc
   return tabs;
 }
 
-Initiator.prototype.__get_tab_name = function(tab_id) {
+AuthenticatedInitiator.prototype.__get_tab_name = function(tab_id) {
   return tab_id.replace(/_tab$/, '');
 }
 
-Initiator.prototype.__on_tab_show = function(ui, tabs) {
+AuthenticatedInitiator.prototype.__on_tab_show = function(ui) {
   // "View Tweets" tab must be reloaded to reflect the latest Tweets
   // added, edited, or deleted -- don't want its contents cached.
   // TODO: when first loaded and contents aren't already cached, tab is
   // loaded twice.
   if(this.__get_tab_name(ui.tab.id) == 'view_tweets')
-    tabs.tabs('load', tabs.tabs('option', 'selected'));
+    this.__tabs.tabs('load', this.__tabs.tabs('option', 'selected'));
 }
 
-Initiator.prototype.__on_tab_load = function(ui, tabs, notifier, tweet_edit_state, next_scheduled_tweet) {
+AuthenticatedInitiator.prototype.__on_tab_load = function(ui) {
   var tab_name = this.__get_tab_name(ui.tab.id);
   var panel = $(ui.panel);
-
-  // Do following for every tab.
-  this.__configure_explanations();
-  new DatetimeHumanizer();
+  var self = this;
 
   var configure_tweet_editor = function() {
-    var tweeter = new Tweeter(panel, notifier);
+    var tweeter = new Tweeter(panel, self.__notifier);
     var tweet_input = tweeter.get_tweet_input();
-    new UrlShortener(panel, tweet_input, notifier);
-    new ImageUploader(panel, tweet_input, notifier);
+    new UrlShortener(panel, tweet_input, self.__notifier);
+    new ImageUploader(panel, tweet_input, self.__notifier);
     return tweeter;
   };
 
@@ -94,19 +83,19 @@ Initiator.prototype.__on_tab_load = function(ui, tabs, notifier, tweet_edit_stat
       var tweeter = configure_tweet_editor();
       tweeter.add_submission_callback(function() {
         tweeter.reset();
-        next_scheduled_tweet.refresh();
+        self.__next_scheduled_tweet.refresh();
       });
     },
 
     edit_tweet: function() {
       var tweeter = configure_tweet_editor();
       var key = tweeter.get_key();
-      tweet_edit_state.add_being_edited(key, panel.attr('id'));
+      self.__tweet_edit_state.add_being_edited(key, panel.attr('id'));
 
       var editing_complete = function() {
-        tabs.tabs('remove', ui.index);
-        tweet_edit_state.remove_being_edited(key);
-        next_scheduled_tweet.refresh();
+        self.__tabs.tabs('remove', ui.index);
+        self.__tweet_edit_state.remove_being_edited(key);
+        self.__next_scheduled_tweet.refresh();
       };
       tweeter.add_submission_callback(editing_complete);
       tweeter.get_tweet_form().find('[name=cancel]').click(editing_complete);
@@ -121,14 +110,6 @@ Initiator.prototype.__on_tab_load = function(ui, tabs, notifier, tweet_edit_stat
   // hardcoded in my markup.
   tabload_handlers.default = tabload_handlers.edit_tweet;
 
+  this.__initiator.on_tab_load(); // Default actions for every tab.
   (tabload_handlers[tab_name] || tabload_handlers.default)();
-}
-
-Initiator.prototype.__configure_explanations = function() {
-  $('.explanation').each(function() {
-    var e = $(this);
-    var tooltip_content = e.html();
-    e.text('?');
-    e.moderatelyDampTip({content: tooltip_content});
-  });
 }

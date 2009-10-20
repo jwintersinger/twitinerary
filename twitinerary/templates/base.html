@@ -14,6 +14,7 @@
       src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/jquery.cookie.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/jquery_extensions.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/init.js"></script>
 
   {% if request.user.is_authenticated %}
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/notifier.js"></script>
@@ -24,10 +25,10 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/tweet_edit_state.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/datetime_humanizer.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/next_scheduled_tweet.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/init_authenticated.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/authenticated_initiator.js"></script>
   {% else %}
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/tweets_about.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/init_unauthenticated.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/unauthenticated_initiator.js"></script>
   {% endif %}
   </head>
 
@@ -39,7 +40,7 @@
 
     <h1><a href="{% url twitinerary.views.tweets.home %}">Twitinerary</a></h1>
 
-    <p>
+    <p id="authenticator" class="{% if request.user.is_authenticated %}authenticated{% else %}unauthenticated{% endif %}">
     {% if request.user.is_authenticated %}
     Signed in as <a
       href="http://twitter.com/{{ request.user.username|iriencode }}"> @{{ request.user.username }}</a>.
