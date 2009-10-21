@@ -5,7 +5,7 @@ function TweetManipulator(tabs, notifier, tweet_edit_state) {
   this.__delete_callbacks = [];
 }
 
-TweetManipulator.prototype.on_init_edit = function(form) {
+TweetManipulator.prototype.__on_init_edit = function(form) {
   var form = $(form);
   var key = Tweeter.extract_key(form);
   if(this.__tweet_edit_state.is_being_edited(key)) {
@@ -19,7 +19,7 @@ TweetManipulator.prototype.on_init_edit = function(form) {
   return false;
 }
 
-TweetManipulator.prototype.on_delete = function(form) {
+TweetManipulator.prototype.__on_delete = function(form) {
   var form = $(form);
   var self = this;
   var after_delete = function(success, message) {
@@ -43,4 +43,18 @@ TweetManipulator.prototype.on_delete = function(form) {
 
 TweetManipulator.prototype.add_delete_callback = function(callback) {
   this.__delete_callbacks.push(callback);
+}
+
+TweetManipulator.prototype.configure_handlers = function() {
+  var self = this;
+  // Can't use jQuery's "live" manipulators, which prevent having to rebind handlers every time new
+  // element created -- they don't support 'submit' events.
+  // Must unbind first to remove handlers bound to elements that existed on past tab loads (i.e.,
+  // the "next scheduled Tweet" widgets).
+  $('.tweet-editor').unbind().submit(function(event) {
+    return self.__on_init_edit(event.target);
+  });
+  $('.tweet-deleter').unbind().submit(function(event) {
+    return self.__on_delete(event.target);
+  });
 }

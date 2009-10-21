@@ -1,4 +1,6 @@
-NextScheduledTweet = function() {
+NextScheduledTweet = function(initiator, tweet_manipulator) {
+  this.__initiator = initiator;
+  this.__tweet_manipulator = tweet_manipulator;
   this.__initial_load = true;
   this.__container = $('#next-scheduled-tweet');
   // Container only present when user is authenticated.
@@ -25,10 +27,14 @@ NextScheduledTweet.prototype.__set_content = function(new_content) {
   var self = this;
   var update_content = function(content) {
     self.__container.html(content);
+
     // Necessary for "only change if text different" check to work, as we alter
     // the HTML in transforming the date.
     self.__container.data('content_before_date_humanization', content);
     self.__humanize_time_until_next_tweet();
+
+    self.__initiator.content_changed();
+    self.__tweet_manipulator.configure_handlers();
   };
 
   // Skip all fading animations on first load.
@@ -63,6 +69,7 @@ NextScheduledTweet.prototype.__humanize_time_until_next_tweet = function() {
   var next_tweet_time = new Date(1000*parseInt(time_container.text(), 10));
   time_container.text(distance_between_times(new Date(), next_tweet_time));
 }
+
 
 
 function distance_between_times(a, b) {

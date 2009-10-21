@@ -1,54 +1,30 @@
 function AuthenticatedInitiator(initiator) {
   this.__initiator = initiator;
+  this.__configure_tabs();
   this.__tweet_edit_state = new TweetEditState();
-  this.__next_scheduled_tweet = new NextScheduledTweet();
-
-  this.__tabs = this.__create_tabs();
-  this.__configure_tweet_manipulators();
+  this.__configure_tweet_manipulator();
+  this.__next_scheduled_tweet = new NextScheduledTweet(this.__initiator, this.__tweet_manipulator);
 }
 
-// Configure 'edit' and 'delete' manipulators. Such are present on the "View Tweets" tab and on the
-// "next scheduled Tweet" widget that is globally present.
-AuthenticatedInitiator.prototype.__configure_tweet_manipulators = function() {
-  var tweet_manipulator = new TweetManipulator(this.__tabs, this.__initiator.notifier, this.__tweet_edit_state);
-
-  $('.tweet-editor').live('submit', function(event) {
-    return tweet_manipulator.on_init_edit(event.target);
-  });
-  $('.tweet-deleter').live('submit', function(event) {
-    return tweet_manipulator.on_delete(event.target);
-  });
-
+AuthenticatedInitiator.prototype.__configure_tabs = function() {
+  this.__tabs = $('#tabs');
   var self = this;
-  // Refresh occurs on 'new' & 'edit' Tweet states in respective submit handlers.
-  tweet_manipulator.add_delete_callback(function() {
-    // Reload "View Tweets" tab when Tweet deleted; note that this is not
-    // necessary when tab is not selected, for it will be automatically
-    // reloaded when it is switched to.
-    self.__tabs.tabs('reload_if_selected', '#View_Tweets');
-    self.__next_scheduled_tweet.refresh();
-  });
-}
-
-AuthenticatedInitiator.prototype.__create_tabs = function() {
-  var tabs = $('#tabs');
-  var self = this;
-  tabs.tabs({
+  this.__tabs.tabs({
     // Cache contents of tabs so they aren't reloaded when tab is switched to.
     // Otherwise, contents of forms will be lost when switching away from and
     // then back to a tab (not to mention that an unnecessary network request
     // will be performed, too).
     cache: true,
     load: function(event, ui) {
-      return self.__on_tab_load(ui, tabs);
+      return self.__on_tab_load(ui);
     },
     show: function(event, ui) {
-      return self.__on_tab_show(ui, tabs);
+      return self.__on_tab_show(ui);
     }
   });
+
   // Allow tabs to be dragged and dropped.
-  tabs.find('.ui-tabs-nav').sortable({axis: 'x'});
-  return tabs;
+  this.__tabs.find('.ui-tabs-nav').sortable({axis: 'x'});
 }
 
 AuthenticatedInitiator.prototype.__get_tab_name = function(tab_id) {
@@ -64,10 +40,9 @@ AuthenticatedInitiator.prototype.__on_tab_show = function(ui) {
     this.__tabs.tabs('load', this.__tabs.tabs('option', 'selected'));
 }
 
-AuthenticatedInitiator.prototype.__on_tab_load = function(ui) {
-  var tab_name = this.__get_tab_name(ui.tab.id);
-  var panel = $(ui.panel);
+AuthenticatedInitiator.prototype.__get_tabload_handlers = function(ui) {
   var self = this;
+  var panel = $(ui.panel);
 
   var configure_tweet_editor = function() {
     var tweeter = new Tweeter(panel, self.__initiator.notifier);
@@ -100,15 +75,39 @@ AuthenticatedInitiator.prototype.__on_tab_load = function(ui) {
       tweeter.get_tweet_form().find('[name=cancel]').click(editing_complete);
     },
 
-    // Must specify handler or edit_tweet will be used by default.
-    view_tweets: function() { }
+    view_tweets: function() {
+      self.__tweet_manipulator.configure_handlers();
+    }
   };
 
   // If tab has no ID associated with it, it must be an edit tab, since edit
   // tabs and panels are created dynamically by jQuery UI, rather than being
   // hardcoded in my markup.
-  tabload_handlers.default = tabload_handlers.edit_tweet;
+  // Note that "default" is reserved name -- triggers error in Chrome but not Firefox. Use
+  // "default_handler" instead.
+  tabload_handlers.default_handler = tabload_handlers.edit_tweet;
 
-  this.__initiator.on_tab_load(); // Default actions for every tab.
-  (tabload_handlers[tab_name] || tabload_handlers.default)();
+  return tabload_handlers;
+}
+
+AuthenticatedInitiator.prototype.__configure_tweet_manipulator = function() {
+  this.__tweet_manipulator = new TweetManipulator(this.__tabs,
+    this.__initiator.notifier, this.__tweet_edit_state);
+
+  var self = this;
+  this.__tweet_manipulator.add_delete_callback(function() {
+    // Reload "View Tweets" tab when Tweet deleted; note that this is not
+    // necessary when tab is not selected, for it will be automatically
+    // reloaded when it is switched to.
+    self.__tabs.tabs('reload_if_selected', '#View_Tweets');
+    self.__next_scheduled_tweet.refresh();
+  });
+}
+
+AuthenticatedInitiator.prototype.__on_tab_load = function(ui) {
+  this.__initiator.content_changed(); // Default actions for every tab.
+
+  var tabload_handlers = this.__get_tabload_handlers(ui);
+  var tab_name = this.__get_tab_name(ui.tab.id);
+  (tabload_handlers[tab_name] || tabload_handlers.default_handler)();
 }
