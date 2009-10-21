@@ -7,7 +7,7 @@ function TweetManipulator(tabs, notifier, tweet_edit_state) {
 
 TweetManipulator.prototype.__on_init_edit = function(form) {
   var form = $(form);
-  var key = Tweeter.extract_key(form);
+  var key = TweetEditor.extract_key(form);
   if(this.__tweet_edit_state.is_being_edited(key)) {
     this.__tabs.tabs('select', '#' + this.__tweet_edit_state.get_edit_panel_id(key));
     return false;
@@ -25,7 +25,7 @@ TweetManipulator.prototype.__on_delete = function(form) {
   var after_delete = function(success, message) {
     self.__notifier['notify_' + (success ? 'success' : 'failure')](message);
 
-    var key = Tweeter.extract_key(form);
+    var key = TweetEditor.extract_key(form);
     self.__tabs.tabs('remove_by_selector', '#' + self.__tweet_edit_state.get_edit_panel_id(key));
 
     $.each(self.__delete_callbacks, function() { this(); });

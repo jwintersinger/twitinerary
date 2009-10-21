@@ -1,4 +1,4 @@
-function Tweeter(container, notifier) {
+function TweetEditor(container, notifier) {
   // Note that when selecting elements, we work by identifying the element by
   // its class within the container, rather than simply selecting by an ID. The
   // reason for this is that multiple such elements may be present in the DOM --
@@ -16,28 +16,28 @@ function Tweeter(container, notifier) {
   this.__tweet_char_counter = new TweetCharCounter(this);
 }
 
-Tweeter.prototype.get_tweet_form = function() {
+TweetEditor.prototype.get_tweet_form = function() {
   return this.__el.tweet_form;
 }
 
-Tweeter.prototype.get_key = function() {
-  return Tweeter.extract_key(this.__el.tweet_form);
+TweetEditor.prototype.get_key = function() {
+  return TweetEditor.extract_key(this.__el.tweet_form);
 }
 
-Tweeter.extract_key = function(form) {
+TweetEditor.extract_key = function(form) {
   return $(form).find('[name=key]').val();
 }
 
-Tweeter.prototype.get_tweet_input = function() {
+TweetEditor.prototype.get_tweet_input = function() {
   return this.__el.tweet_form.find('[name=tweet]');
 }
 
 // Callbacks called on successful submission of Tweet.
-Tweeter.prototype.add_submission_callback = function(callback) {
+TweetEditor.prototype.add_submission_callback = function(callback) {
   this.__submission_callbacks.push(callback);
 }
 
-Tweeter.prototype.reset = function() {
+TweetEditor.prototype.reset = function() {
   this.__el.tweet_form[0].reset();
   // reset() call does not reset hidden fields, so must do so manually.
   this.__el.post_at.val('');
@@ -45,14 +45,14 @@ Tweeter.prototype.reset = function() {
   this.__tweet_char_counter.reset();
 }
 
-Tweeter.prototype.__initialize_editor = function() {
+TweetEditor.prototype.__initialize_editor = function() {
   this.__set_initial_datetime();
   this.__label_date_picker_activator();
   this.get_tweet_input().focus();
 }
 
 // Common references to elements used multiple times.
-Tweeter.prototype.__set_elements = function(container) {
+TweetEditor.prototype.__set_elements = function(container) {
   this.__el = {
     container:  container,
     tweet_form: container.find('.tweet-form')
@@ -63,7 +63,7 @@ Tweeter.prototype.__set_elements = function(container) {
   });
 }
 
-Tweeter.prototype.__configure_date_picker_calendar = function() {
+TweetEditor.prototype.__configure_date_picker_calendar = function() {
   var self = this;
   var on_select = function(date) {
     date = $.datepicker.parseDate('mm/dd/yy', date);
@@ -75,13 +75,13 @@ Tweeter.prototype.__configure_date_picker_calendar = function() {
     datepicker({onSelect: on_select});
 }
 
-Tweeter.prototype.__package_time_into_form = function() {
+TweetEditor.prototype.__package_time_into_form = function() {
   this.__update_time(); // Date already updated when corresponding button clicked.
   // Set to number of seconds since Unix epoch. Divide by 1000 to convert from ms to s.
   this.__el.post_at.val( this.__post_at.getTime() / 1000.0 );
 }
 
-Tweeter.prototype.__configure_tweet_submission = function() {
+TweetEditor.prototype.__configure_tweet_submission = function() {
   var self = this;
   this.__el.tweet_form.submit(function() {
     self.__package_time_into_form();
@@ -109,7 +109,7 @@ Tweeter.prototype.__configure_tweet_submission = function() {
   });
 }
 
-Tweeter.prototype.__label_date_picker_activator = function(date) {
+TweetEditor.prototype.__label_date_picker_activator = function(date) {
   if(!this.__date_picker_activator_default_value)
     this.__date_picker_activator_default_value = this.__date_picker_activator.attr('value');
 
@@ -120,7 +120,7 @@ Tweeter.prototype.__label_date_picker_activator = function(date) {
   this.__date_picker_activator.attr('value', label);
 }
 
-Tweeter.prototype.__configure_day_choosers = function() {
+TweetEditor.prototype.__configure_day_choosers = function() {
   var self = this;
   this.__day_choosers = this.__el.container.find('.day-chooser input');
 
@@ -145,13 +145,13 @@ Tweeter.prototype.__configure_day_choosers = function() {
 
 // Sets post_at to (now + hours_delta). hours_delta defaults to 0. Makes no
 // effort to preserve time-related information.
-Tweeter.prototype.__make_time_now = function(hours_delta) {
+TweetEditor.prototype.__make_time_now = function(hours_delta) {
   if(!hours_delta) hours_delta = 0;
   this.__post_at = new Date();
   this.__post_at.setHours(this.__post_at.getHours() + hours_delta);
 }
 
-Tweeter.prototype.__calculate_initial_time = function() {
+TweetEditor.prototype.__calculate_initial_time = function() {
   var post_at = this.__el.post_at.val();
   if(post_at) {
     this.__post_at = new Date(1000*parseInt(post_at, 10));
@@ -160,7 +160,7 @@ Tweeter.prototype.__calculate_initial_time = function() {
   } 
 }
 
-Tweeter.prototype.__set_initial_datetime = function() {
+TweetEditor.prototype.__set_initial_datetime = function() {
   this.__calculate_initial_time();
 
   // Minutes.
@@ -186,7 +186,7 @@ Tweeter.prototype.__set_initial_datetime = function() {
   this.__date_picker_calendar.datepicker('setDate', this.__post_at);
 }
 
-Tweeter.prototype.__update_time = function() {
+TweetEditor.prototype.__update_time = function() {
   var hours = TimeCalculator.convert_12_based_hours_to_24_based_hours(
     parseInt(this.__el.hours.val(), 10),
     this.__el.period.val() );
@@ -197,15 +197,15 @@ Tweeter.prototype.__update_time = function() {
   this.__post_at.setMinutes(minutes);
 }
 
-Tweeter.prototype.__indicate_active_day_chooser = function(name) {
+TweetEditor.prototype.__indicate_active_day_chooser = function(name) {
   this.__day_choosers.removeClass('active').filter('[name=' + name + ']').addClass('active');
 }
 
 
 
-function TweetCharCounter(tweeter) {
-  this.__char_counter = tweeter.get_tweet_form().find('.tweet-char-counter');
-  this.__tweet_input = tweeter.get_tweet_input();
+function TweetCharCounter(tweet_editor) {
+  this.__char_counter = tweet_editor.get_tweet_form().find('.tweet-char-counter');
+  this.__tweet_input = tweet_editor.get_tweet_input();
   this.__max_length = 140;
   this.__default_colour = this.__char_counter.css('color');
   this.reset();

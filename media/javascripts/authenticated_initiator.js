@@ -45,25 +45,25 @@ AuthenticatedInitiator.prototype.__get_tabload_handlers = function(ui) {
   var panel = $(ui.panel);
 
   var configure_tweet_editor = function() {
-    var tweeter = new Tweeter(panel, self.__initiator.notifier);
-    var tweet_input = tweeter.get_tweet_input();
+    var tweet_editor = new TweetEditor(panel, self.__initiator.notifier);
+    var tweet_input = tweet_editor.get_tweet_input();
     new UrlShortener(panel, tweet_input, self.__initiator.notifier);
     new ImageUploader(panel, tweet_input, self.__initiator.notifier);
-    return tweeter;
+    return tweet_editor;
   };
 
   var tabload_handlers = {
     new_tweet: function() {
-      var tweeter = configure_tweet_editor();
-      tweeter.add_submission_callback(function() {
-        tweeter.reset();
+      var tweet_editor = configure_tweet_editor();
+      tweet_editor.add_submission_callback(function() {
+        tweet_editor.reset();
         self.__next_scheduled_tweet.refresh();
       });
     },
 
     edit_tweet: function() {
-      var tweeter = configure_tweet_editor();
-      var key = tweeter.get_key();
+      var tweet_editor = configure_tweet_editor();
+      var key = tweet_editor.get_key();
       self.__tweet_edit_state.add_being_edited(key, panel.attr('id'));
 
       var editing_complete = function() {
@@ -71,8 +71,8 @@ AuthenticatedInitiator.prototype.__get_tabload_handlers = function(ui) {
         self.__tweet_edit_state.remove_being_edited(key);
         self.__next_scheduled_tweet.refresh();
       };
-      tweeter.add_submission_callback(editing_complete);
-      tweeter.get_tweet_form().find('[name=cancel]').click(editing_complete);
+      tweet_editor.add_submission_callback(editing_complete);
+      tweet_editor.get_tweet_form().find('[name=cancel]').click(editing_complete);
     },
 
     view_tweets: function() {
