@@ -300,7 +300,7 @@ class OhAuthClient():
         logging.error('urlfetch attempt returned HTTP 503 Service Unavailable.')
         response = request()
     except urlfetch.DownloadError:
-      logging.error('urlfetch attempt raised DownloadError.')
+      logging.error('urlfetch attempt raised DownloadError on %s %s' % (url, method))
       response = request() # Retry once if DownloadError raised.
     return response
     
