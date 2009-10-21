@@ -20,8 +20,6 @@ Provide better indication of when last Tweet scheduled -- Alex schedules one, fo
     Display multiple Tweets in "next scheduled Tweet"
     Move away from tab-based interface entirely -- perhaps scheduled Tweets should be visible at same time as "Schedule new Tweet"
     
-Turn tags blue -- "#tweets"
-
 Improve explanations:
   Don't fade out immediately -- allow user time to click on contained link, such as with "use TwitPic directly" link in image uploader password explanation
   Always position within visible client area -- don't make browser scroll
@@ -36,8 +34,6 @@ Design:
   Determine new name for application
   Favicon
   Bigger Tweet box -- too small in comparison with text
-
-Convert submit buttons to links
 
 
 ================

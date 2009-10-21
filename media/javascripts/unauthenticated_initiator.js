@@ -9,6 +9,6 @@ function UnauthenticatedInitiator(initiator) {
         '>@' + tweet.from_user + '</a>: ' + tweet.text + ' at ' + tweet.created_at + '</li>');
     }
   });
-  initiator.on_tab_load();
+  initiator.content_changed();
 }
 

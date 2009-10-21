@@ -14,16 +14,17 @@
       src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/jquery.cookie.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/jquery_extensions.js"></script>
+
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/init.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/notifier.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/datetime_humanizer.js"></script>
 
   {% if request.user.is_authenticated %}
-    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/notifier.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/url_shortener.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/image_uploader.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/tweet_editor.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/tweet_manipulator.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/tweet_edit_state.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/datetime_humanizer.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/next_scheduled_tweet.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}javascripts/authenticated_initiator.js"></script>
   {% else %}
