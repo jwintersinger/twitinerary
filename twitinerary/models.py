@@ -1,4 +1,5 @@
 import base64
+import logging
 from django.conf import settings
 from google.appengine.ext import db
 from google.appengine.api import urlfetch
@@ -12,7 +13,13 @@ class Twitterer:
     response = client.fetch('/statuses/update.json', method='POST',
       payload={'status': tweet.tweet}, access_token=tweet.user.access_token,
       access_secret=tweet.user.access_secret)
-    return response.status_code == 200
+
+    if response.status_code == 200:
+      logging.info('Successfully tweeted "%s"' % tweet.tweet)
+      return True
+    else:
+      logging.error('Tweet failed [%s]: %s' % (response.status_code, tweet.tweet))
+      return False
 
 class AuthenticatedUser(db.Model):
   username      = db.StringProperty(required=True)

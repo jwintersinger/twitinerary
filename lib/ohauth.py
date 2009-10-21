@@ -292,8 +292,14 @@ class OhAuthClient():
     elif payload:
       url = "%s?%s" % (url, urlencode(payload))
 
-    request = lambda: urlfetch.fetch(url, payload=encoded_payload,
-      method=self._request_method_name_to_constant(method), headers=headers)
+    def request():
+      response = urlfetch.fetch(url, payload=encoded_payload,
+        method=self._request_method_name_to_constant(method), headers=headers)
+      if response.status_code != 200:
+        logging.error('%s error on %s %s\n\nPayload: %s\n\nHeaders: %s\n\nResponse:%s' % (
+          response.status_code, method, url, repr(payload), repr(headers), response.content)
+      return response
+
     try:
       response = request()
       if response.status_code == 503: # Retry once if status is "Service Unavailable".
