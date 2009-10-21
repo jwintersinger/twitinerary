@@ -301,7 +301,7 @@ class OhAuthClient():
         method=self._request_method_name_to_constant(method), headers=headers)
       if response.status_code != 200:
         logging.error('%s error on %s %s\n\nPayload: %s\n\nHeaders: %s\n\nResponse:%s' % (
-          response.status_code, method, url, repr(payload), repr(headers), response.content)
+          response.status_code, method, url, repr(payload), repr(headers), response.content))
       return response
 
     try:
