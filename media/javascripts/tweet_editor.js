@@ -237,7 +237,9 @@ TweetCharCounter.prototype.__change_colour = function(tweet_length) {
   var red = max*(tweet_length / this.__max_length);
   if(red > max) red = max;
 
-  this.__char_counter.css('color', '#' + Math.round(red).toString(16) + '0000');
+  red = Math.round(red).toString(16);
+  if(red.length < 2) red = '0' + red;
+  this.__char_counter.css('color', '#' + red + '0000');
 }
 
 TweetCharCounter.prototype.is_tweet_too_long = function() {
