@@ -111,6 +111,8 @@ OhAuth is based on AppEngine-OAuth-Library
     request body or as part of the URL query string, as per the OAuth spec.
   * Rudimentary error handling has been added, with network requests retried
     when they fail.
+  * Fixed bug in which incorrect signature generated for messages containing
+    '~', for this character was escaped when it ought not to have been.
 
 
 ============
@@ -223,7 +225,9 @@ class OhAuthClient():
 
   def _encode(self, text):
     """Encodes value as per the OAuth API."""
-    return urlquote(str(text), "")
+    # By default, urlquote escapes everything but letters, digits, and '_.-'.
+    # OAuth spec requires that '~' also not be escaped.
+    return urlquote(str(text), '~')
 
   def _generate_signature(self, method, url, oauth_params, payload, secret):
     """Generates a HMAC-SHA1 signature for the request."""
