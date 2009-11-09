@@ -113,6 +113,8 @@ OhAuth is based on AppEngine-OAuth-Library
     when they fail.
   * Fixed bug in which incorrect signature generated for messages containing
     '~', for this character was escaped when it ought not to have been.
+  * Fixed inability to use characters in OAuth requests that can't be encoded
+    with ascii codec, such as u'\u2019'.
 
 
 ============
@@ -136,8 +138,10 @@ from hashlib import sha1
 from hmac import new as hmac
 from random import getrandbits
 from time import time
-from urllib import urlencode
-from urllib import quote as urlquote
+# Use Django equivalents of urllib.{quote,urlencode}, as the latter are not
+# Unicode-safe. Example of string that causes urllib.{quote,urlencode} to raise
+# an exception: u'What\u2019s'.
+from django.utils.http import urlquote, urlencode
 from urllib import unquote as urlunquote
 
 import logging
@@ -227,7 +231,7 @@ class OhAuthClient():
     """Encodes value as per the OAuth API."""
     # By default, urlquote escapes everything but letters, digits, and '_.-'.
     # OAuth spec requires that '~' also not be escaped.
-    return urlquote(str(text), '~')
+    return urlquote(text, '~')
 
   def _generate_signature(self, method, url, oauth_params, payload, secret):
     """Generates a HMAC-SHA1 signature for the request."""
