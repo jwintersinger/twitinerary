@@ -14,7 +14,7 @@ handlers:
 - url: /media
   static_dir: media
   secure: optional
-  login: admin
+  #login: admin # Commented out to remove admin authentication requirement.
 
 - url: /cron/.*
   script: common/appenginepatch/main.py
@@ -24,4 +24,4 @@ handlers:
 - url: /.*
   script: common/appenginepatch/main.py
   secure: optional
-  login: admin
+  #login: admin # Commented out to remove admin authentication requirement.
