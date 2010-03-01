@@ -1,3 +1,9 @@
+====
+Bugs
+====
+One can schedule an empty Tweet; instead, should be given error message related to empty Tweet
+
+
 ==========
 Short term
 ==========
